@@ -10,7 +10,7 @@ Paytrail is a payment gateway that offers 20+ payment methods for Finnish custom
 
 The payment gateway provides all the popular payment methods with one simple integration. The provided payment methods include, but are not limited to, credit cards, online banking and mobile payments.
 
-To use the payment service, you need to sign up for a Paytrail account. Transaction fees will be charged for every transaction. Transaction cost may vary from merchant to merchant, based on what is agreed upon with Paytrail when negotiating your contract. For more information and registration, please visit our [website](https://www.paytrail.com) or contact asiakaspalvelu@paytrail.com directly.
+To use the payment service, you need to sign up for a Paytrail account. Transaction fees will be charged for every transaction. Transaction cost may vary from merchant to merchant, based on what is agreed upon with Paytrail when negotiating your contract. For more information and registration, please visit our [website](https://www.paytrail.com/en) or [contact us](https://www.paytrail.com/en/contact) directly.
 
 ### Testing ###
 
