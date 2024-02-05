@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Constants {
+    public static final String API_ENDPOINT = "https://services.paytrail.com";
     public static final String CHECKOUT_ACCOUNT = "checkout-account";
     public static final String CHECKOUT_ALGORITHM = "checkout-algorithm";
     public static final String CHECKOUT_METHOD = "checkout-method";

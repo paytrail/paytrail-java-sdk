@@ -19,8 +19,6 @@ import static io.paytrailpayment.utilites.Constants.GET_METHOD;
 @NoArgsConstructor
 @Getter @Setter
 public class PaytrailClient extends Paytrail implements IPaytrail {
-    private static final String API_ENDPOINT = "https://services.paytrail.com";
-
     public PaytrailClient(String merchantId, String secretKey, String platformName) {
         this.merchantId = merchantId;
         this.secretKey = secretKey;
@@ -92,7 +90,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
         CreatePaymentResponse res = new CreatePaymentResponse();
 
         try {
-            String targetURL = API_ENDPOINT + "/payments";
+            String targetURL = Constants.API_ENDPOINT + "/payments";
             DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, body, null, null);
 
             if (data.getStatusCode() != StatusCode.OK && data.getStatusCode() != StatusCode.CREATED) {
@@ -120,7 +118,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
         GetPaymentResponse res = new GetPaymentResponse();
 
         try {
-            String targetURL = API_ENDPOINT + "/payments/" + transactionId;
+            String targetURL = Constants.API_ENDPOINT + "/payments/" + transactionId;
             DataResponse data = this.handleRequest(GET_METHOD, targetURL, null, transactionId, null);
 
             if (data.getStatusCode() != StatusCode.OK && data.getStatusCode() != StatusCode.CREATED) {
@@ -148,7 +146,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
         CreateRefundResponse res = new CreateRefundResponse();
 
         try {
-            String targetURL = API_ENDPOINT + "/payments/" + transactionId + "/refund";
+            String targetURL = Constants.API_ENDPOINT + "/payments/" + transactionId + "/refund";
             DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, body, transactionId, null);
 
             if (data.getStatusCode() != StatusCode.OK && data.getStatusCode() != StatusCode.CREATED) {
