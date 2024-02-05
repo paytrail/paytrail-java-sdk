@@ -1,8 +1,8 @@
 package io.paytrailpayment;
 
 import io.paytrailpayment.dto.response.data.DataResponse;
-import io.paytrailpayment.exceptions.StatusCode;
 import io.paytrailpayment.utilites.Constants;
+import io.paytrailpayment.utilites.ResponseMessage;
 import io.paytrailpayment.utilites.Signature;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -69,8 +69,8 @@ public abstract class Paytrail {
             String signature = calculateHmac(hdparams, body);
 
             if (signature.isEmpty()) {
-                res.setStatusCode(StatusCode.BAD_REQUEST);
-                res.setData(StatusCode.BAD_REQUEST_MESSAGE);
+                res.setStatusCode(ResponseMessage.BAD_REQUEST.getCode());
+                res.setData(ResponseMessage.BAD_REQUEST.getDescription());
                 return res;
             }
 
@@ -121,7 +121,7 @@ public abstract class Paytrail {
 
             return res;
         } catch (Exception ex) {
-            res.setStatusCode(StatusCode.SERVER_ERROR);
+            res.setStatusCode(ResponseMessage.RESPONSE_ERROR.getCode());
             res.setData(ex.toString());
             return res;
         }

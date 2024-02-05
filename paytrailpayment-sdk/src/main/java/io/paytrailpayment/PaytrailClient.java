@@ -11,8 +11,8 @@ import io.paytrailpayment.dto.response.data.CreateRefundData;
 import io.paytrailpayment.dto.response.data.DataResponse;
 import io.paytrailpayment.dto.response.data.CreatePaymentData;
 import io.paytrailpayment.dto.response.data.GetPaymentData;
-import io.paytrailpayment.exceptions.StatusCode;
 import io.paytrailpayment.utilites.Constants;
+import io.paytrailpayment.utilites.ResponseMessage;
 import lombok.*;
 import static io.paytrailpayment.utilites.Constants.GET_METHOD;
 
@@ -40,7 +40,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
 
             return res;
         } catch (Exception e) {
-            res.setReturnCode(StatusCode.SERVER_ERROR);
+            res.setReturnCode(ResponseMessage.RESPONSE_ERROR.getCode());
             res.setReturnMessage(e.toString());
             return res;
         }
@@ -59,7 +59,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
 
             return res;
         } catch (Exception e) {
-            res.setReturnCode(StatusCode.SERVER_ERROR);
+            res.setReturnCode(ResponseMessage.RESPONSE_ERROR.getCode());
             res.setReturnMessage(e.toString());
             return res;
         }
@@ -80,7 +80,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
 
             return res;
         } catch (Exception e) {
-            res.setReturnCode(StatusCode.SERVER_ERROR);
+            res.setReturnCode(ResponseMessage.RESPONSE_ERROR.getCode());
             res.setReturnMessage(e.toString());
             return res;
         }
@@ -93,7 +93,8 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             String targetURL = Constants.API_ENDPOINT + "/payments";
             DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, body, null, null);
 
-            if (data.getStatusCode() != StatusCode.OK && data.getStatusCode() != StatusCode.CREATED) {
+            if (data.getStatusCode() != ResponseMessage.OK.getCode()
+                    && data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
                 res.setReturnCode(data.getStatusCode());
                 res.setReturnMessage(data.getData());
             } else {
@@ -101,14 +102,14 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
                 CreatePaymentData dataMapper = mapper.readValue(data.getData(), CreatePaymentData.class);
 
                 res.setReturnCode(data.getStatusCode());
-                res.setReturnMessage(StatusCode.OK_MESSAGE);
+                res.setReturnMessage(ResponseMessage.OK.getDescription());
                 res.setData(dataMapper);
             }
 
             return res;
 
         } catch (Exception e) {
-            res.setReturnCode(StatusCode.SERVER_ERROR);
+            res.setReturnCode(ResponseMessage.RESPONSE_ERROR.getCode());
             res.setReturnMessage(e.toString());
             return res;
         }
@@ -121,7 +122,8 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             String targetURL = Constants.API_ENDPOINT + "/payments/" + transactionId;
             DataResponse data = this.handleRequest(GET_METHOD, targetURL, null, transactionId, null);
 
-            if (data.getStatusCode() != StatusCode.OK && data.getStatusCode() != StatusCode.CREATED) {
+            if (data.getStatusCode() != ResponseMessage.OK.getCode()
+                    && data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
                 res.setReturnCode(data.getStatusCode());
                 res.setReturnMessage(data.getData());
             } else {
@@ -129,14 +131,14 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
                 GetPaymentData dataMapper = mapper.readValue(data.getData(), GetPaymentData.class);
 
                 res.setReturnCode(data.getStatusCode());
-                res.setReturnMessage(StatusCode.OK_MESSAGE);
+                res.setReturnMessage(ResponseMessage.OK.getDescription());
                 res.setData(dataMapper);
             }
 
             return res;
 
         } catch (Exception e) {
-            res.setReturnCode(StatusCode.SERVER_ERROR);
+            res.setReturnCode(ResponseMessage.RESPONSE_ERROR.getCode());
             res.setReturnMessage(e.toString());
             return res;
         }
@@ -149,7 +151,8 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             String targetURL = Constants.API_ENDPOINT + "/payments/" + transactionId + "/refund";
             DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, body, transactionId, null);
 
-            if (data.getStatusCode() != StatusCode.OK && data.getStatusCode() != StatusCode.CREATED) {
+            if (data.getStatusCode() != ResponseMessage.OK.getCode()
+                    && data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
                 res.setReturnCode(data.getStatusCode());
                 res.setReturnMessage(data.getData());
             } else {
@@ -157,14 +160,14 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
                 CreateRefundData dataMapper = mapper.readValue(data.getData(), CreateRefundData.class);
 
                 res.setReturnCode(data.getStatusCode());
-                res.setReturnMessage(StatusCode.OK_MESSAGE);
+                res.setReturnMessage(ResponseMessage.OK.getDescription());
                 res.setData(dataMapper);
             }
 
             return res;
 
         } catch (Exception e) {
-            res.setReturnCode(StatusCode.SERVER_ERROR);
+            res.setReturnCode(ResponseMessage.RESPONSE_ERROR.getCode());
             res.setReturnMessage(e.toString());
             return res;
         }
@@ -172,15 +175,15 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
 
     private boolean validateCreatePaymentRequest(CreatePaymentRequest req, CreatePaymentResponse res) {
         if (req == null) {
-            res.setReturnCode(StatusCode.BAD_REQUEST);
-            res.setReturnMessage("Payment request can not be null");
+            res.setReturnCode(ResponseMessage.BAD_REQUEST.getCode());
+            res.setReturnMessage(ResponseMessage.BAD_REQUEST.getDescription());
             return false;
         }
 
         ValidationResult validationResult = req.validate();
 
         if (!validationResult.isValid()) {
-            res.setReturnCode(StatusCode.BAD_REQUEST);
+            res.setReturnCode(ResponseMessage.BAD_REQUEST.getCode());
             res.setReturnMessage(validationResult.getMessage().toString());
             return false;
         }
@@ -190,8 +193,8 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
 
     private boolean validateGetPaymentRequest(String transactionId, GetPaymentResponse res) {
         if (transactionId == null || transactionId.isEmpty()) {
-            res.setReturnCode(StatusCode.BAD_REQUEST);
-            res.setReturnMessage("TransactionId can not be null");
+            res.setReturnCode(ResponseMessage.BAD_REQUEST.getCode());
+            res.setReturnMessage(ResponseMessage.BAD_REQUEST.getDescription());
             return false;
         }
 
@@ -199,22 +202,16 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
     }
 
     private boolean validateCreateRefundRequest(CreateRefundRequest req, CreateRefundResponse res, String transactionId) {
-        if (transactionId == null || transactionId.isEmpty()) {
-            res.setReturnCode(StatusCode.BAD_REQUEST);
-            res.setReturnMessage("TransactionId can not be null");
-            return false;
-        }
-
-        if (req == null) {
-            res.setReturnCode(StatusCode.BAD_REQUEST);
-            res.setReturnMessage("Refund request can not be null");
+        if (req == null || transactionId == null || transactionId.isEmpty()) {
+            res.setReturnCode(ResponseMessage.BAD_REQUEST.getCode());
+            res.setReturnMessage(ResponseMessage.BAD_REQUEST.getDescription());
             return false;
         }
 
         ValidationResult validationResult = req.validate();
 
         if (!validationResult.isValid()) {
-            res.setReturnCode(StatusCode.BAD_REQUEST);
+            res.setReturnCode(ResponseMessage.BAD_REQUEST.getCode());
             res.setReturnMessage(validationResult.getMessage().toString());
             return false;
         }
