@@ -2,9 +2,12 @@ package io.paytrailpayment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
+import io.paytrailpayment.dto.request.CreateRefundRequest;
 import io.paytrailpayment.dto.request.ValidationResult;
 import io.paytrailpayment.dto.response.CreatePaymentResponse;
+import io.paytrailpayment.dto.response.CreateRefundResponse;
 import io.paytrailpayment.dto.response.GetPaymentResponse;
+import io.paytrailpayment.dto.response.data.CreateRefundData;
 import io.paytrailpayment.dto.response.data.DataResponse;
 import io.paytrailpayment.dto.response.data.CreatePaymentData;
 import io.paytrailpayment.dto.response.data.GetPaymentData;
@@ -53,6 +56,27 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             }
 
             res = getPayment(transactionId);
+
+            return res;
+        } catch (Exception e) {
+            res.setReturnCode(ResponseMessage.RESPONSE_ERROR.getCode());
+            res.setReturnMessage(e.toString());
+            return res;
+        }
+    }
+
+    @Override
+    public CreateRefundResponse createRefundRequest(CreateRefundRequest req, String transactionId) {
+        CreateRefundResponse res = new CreateRefundResponse();
+
+        try {
+            if (!validateCreateRefundRequest(req, res, transactionId)) {
+                return res;
+            }
+
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonRequest = mapper.writeValueAsString(req);
+            res = createRefundRequest(transactionId, jsonRequest);
 
             return res;
         } catch (Exception e) {
@@ -120,6 +144,34 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
         }
     }
 
+    private CreateRefundResponse createRefundRequest(String transactionId, String body) {
+        CreateRefundResponse res = new CreateRefundResponse();
+
+        try {
+            String targetURL = Constants.API_ENDPOINT + "/payments/" + transactionId + "/refund";
+            DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, body, transactionId, null);
+
+            if (data.getStatusCode() != ResponseMessage.OK.getCode()
+                    && data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
+                res.setReturnCode(data.getStatusCode());
+                res.setReturnMessage(data.getData());
+            } else {
+                ObjectMapper mapper = new ObjectMapper();
+                CreateRefundData dataMapper = mapper.readValue(data.getData(), CreateRefundData.class);
+
+                res.setReturnCode(data.getStatusCode());
+                res.setReturnMessage(ResponseMessage.OK.getDescription());
+                res.setData(dataMapper);
+            }
+
+            return res;
+
+        } catch (Exception e) {
+            res.setReturnCode(ResponseMessage.RESPONSE_ERROR.getCode());
+            res.setReturnMessage(e.toString());
+            return res;
+        }
+    }
 
     private boolean validateCreatePaymentRequest(CreatePaymentRequest req, CreatePaymentResponse res) {
         if (req == null) {
@@ -143,6 +195,24 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
         if (transactionId == null || transactionId.isEmpty()) {
             res.setReturnCode(ResponseMessage.BAD_REQUEST.getCode());
             res.setReturnMessage(ResponseMessage.BAD_REQUEST.getDescription());
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean validateCreateRefundRequest(CreateRefundRequest req, CreateRefundResponse res, String transactionId) {
+        if (req == null || transactionId == null || transactionId.isEmpty()) {
+            res.setReturnCode(ResponseMessage.BAD_REQUEST.getCode());
+            res.setReturnMessage(ResponseMessage.BAD_REQUEST.getDescription());
+            return false;
+        }
+
+        ValidationResult validationResult = req.validate();
+
+        if (!validationResult.isValid()) {
+            res.setReturnCode(ResponseMessage.BAD_REQUEST.getCode());
+            res.setReturnMessage(validationResult.getMessage().toString());
             return false;
         }
 
