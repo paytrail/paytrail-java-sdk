@@ -1,7 +1,9 @@
 package io.paytrailpayment;
 
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
+import io.paytrailpayment.dto.request.CreateRefundRequest;
 import io.paytrailpayment.dto.response.CreatePaymentResponse;
+import io.paytrailpayment.dto.response.CreateRefundResponse;
 import io.paytrailpayment.dto.response.GetPaymentResponse;
 
 /**
@@ -28,4 +30,13 @@ public interface IPaytrail {
      * @see <a href="https://docs.paytrail.com/#/?id=get">Paytrail Documentation - Get Payment</a>
      */
     GetPaymentResponse getPaymentInfo(String transactionId);
+
+    /**
+     * HTTP POST /payments/{transactionId}/refund refunds a payment by transaction ID.
+     *
+     * @param refundRequest   The request object containing refund details.
+     * @param transactionId   The unique identifier for the transaction to refund.
+     * @see <a href="https://docs.paytrail.com/#/?id=refund">Paytrail Documentation - Create Refund Request</a>
+     */
+    CreateRefundResponse createRefundRequest(CreateRefundRequest refundRequest, String transactionId);
 }
