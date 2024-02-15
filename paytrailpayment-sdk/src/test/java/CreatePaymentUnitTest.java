@@ -13,13 +13,13 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CreatePaymentUnitTest {
+public class CreatePaymentUnitTest extends TestCase {
     private PaytrailClient client;
 
     @Before
     public void setUp() {
         // Initialize your PaytrailClient here with default values for all tests or any other setup.
-        client = new PaytrailClient("375917", "SAIPPUAKAUPPIAS", "test");
+        client = new PaytrailClient(this.merchantId, this.secretKey, this.platformName);
     }
 
     @Test()

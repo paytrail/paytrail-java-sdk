@@ -17,13 +17,13 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CreateRefundRequestUnitTest {
+public class CreateRefundRequestUnitTest extends TestCase {
     private PaytrailClient client;
     private String transactionId;
 
     @Before
     public void setUp() {
-        client = new PaytrailClient("375917", "SAIPPUAKAUPPIAS", "test");
+        client = new PaytrailClient(this.merchantId, this.secretKey, this.platformName);
 
         CreatePaymentRequest req = new CreatePaymentRequest();
 
