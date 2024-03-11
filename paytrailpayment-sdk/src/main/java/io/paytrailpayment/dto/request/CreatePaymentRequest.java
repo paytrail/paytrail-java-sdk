@@ -2,14 +2,18 @@ package io.paytrailpayment.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.paytrailpayment.dto.request.model.*;
+
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -99,8 +103,39 @@ public class CreatePaymentRequest extends Request {
 
     @Override()
     protected ValidationResult specificValidate() {
+        String[] supportedCurrencies = {"EUR"};
+        String[] supportedLanguages = {"FI", "SV", "EN"};
+
         StringBuilder message = new StringBuilder();
         boolean isValid = true;
+
+        if (amount <= 0) {
+            isValid = false;
+            message.append("Amount must be more than zero. ");
+        } else if (amount > 99999999) {
+            isValid = false;
+            message.append("Amount can't be more than 99999999. ");
+        }
+
+        if (items != null) {
+            for (Item item : items) {
+                ValidationResult itemValidationResult = item.validate();
+                if (!itemValidationResult.isValid()) {
+                    isValid = false;
+                    message.append(itemValidationResult.getMessage());
+                    break;
+                }
+            }
+
+            // Calculate total amount from items.
+            int itemsTotal = items.stream()
+                    .mapToInt(item -> item.getUnitPrice() * item.getUnits())
+                    .sum();
+
+            if (amount != itemsTotal) {
+                message.append("Amount doesn't match ItemsTotal. ");
+            }
+        }
 
         if (stamp == null || stamp.isEmpty()) {
             isValid = false;
@@ -110,12 +145,7 @@ public class CreatePaymentRequest extends Request {
             message.append("Stamp is more than 200 characters. ");
         }
 
-        if (amount == 0) {
-            isValid = false;
-            message.append("Amount can't be null or empty. ");
-        }
-
-        if (reference == null) {
+        if (reference == null || reference.isEmpty()) {
             isValid = false;
             message.append("Reference can't be null. ");
         } else if (reference.length() > 200) {
@@ -123,22 +153,25 @@ public class CreatePaymentRequest extends Request {
             message.append("Reference is more than 200 characters. ");
         }
 
-        if (orderId == null) {
+        if (currency == null || currency.isEmpty()) {
             isValid = false;
-            message.append("OrderId can't be null. ");
+            message.append("Currency can't be null. ");
+        } else if (!Arrays.asList(supportedCurrencies).contains(currency)) {
+            isValid = false;
+            message.append("Unsupported currency chosen. ");
         }
 
-        if (amount < 0) {
+        if (language == null || language.isEmpty()) {
             isValid = false;
-            message.append("Amount can't be less than zero. ");
-        } else if (amount > 99999999) {
+            message.append("Currency can't be null. ");
+        } else if (!Arrays.asList(supportedLanguages).contains(language)) {
             isValid = false;
-            message.append("Amount can't be more than 99999999. ");
+            message.append("Unsupported language chosen. ");
         }
 
         if (customer == null) {
             isValid = false;
-            message.append("Object customer can't be null. ");
+            message.append("Customer can't be null. ");
         } else {
             ValidationResult customerValidationResult = customer.validate();
             if (!customerValidationResult.isValid()) {
@@ -147,17 +180,22 @@ public class CreatePaymentRequest extends Request {
             }
         }
 
-        if (items == null) {
+        if (redirectUrls == null) {
             isValid = false;
-            message.append("Object items can't be null. ");
+            message.append("Object redirectUrls can't be null. ");
         } else {
-            for (Item item : items) {
-                ValidationResult itemValidationResult = item.validate();
-                if (!itemValidationResult.isValid()) {
-                    isValid = false;
-                    message.append(itemValidationResult.getMessage());
-                    break;
-                }
+            ValidationResult redirectUrlsValidationResult = redirectUrls.validate();
+            if (!redirectUrlsValidationResult.isValid()) {
+                isValid = false;
+                message.append(redirectUrlsValidationResult.getMessage());
+            }
+        }
+
+        if (callbackUrls != null) {
+            ValidationResult callbackUrlsValidationResult = callbackUrls.validate();
+            if (!callbackUrlsValidationResult.isValid()) {
+                isValid = false;
+                message.append(callbackUrlsValidationResult.getMessage());
             }
         }
 
@@ -174,28 +212,6 @@ public class CreatePaymentRequest extends Request {
             if (!invoicingAddressValidationResult.isValid()) {
                 isValid = false;
                 message.append(invoicingAddressValidationResult.getMessage());
-            }
-        }
-
-        if (redirectUrls == null) {
-            isValid = false;
-            message.append("Object redirectUrls can't be null. ");
-        } else {
-            ValidationResult redirectUrlsValidationResult = redirectUrls.validate();
-            if (!redirectUrlsValidationResult.isValid()) {
-                isValid = false;
-                message.append(redirectUrlsValidationResult.getMessage());
-            }
-        }
-
-        if (callbackUrls == null) {
-            isValid = false;
-            message.append("Object callbackUrls can't be null. ");
-        } else {
-            ValidationResult callbackUrlsValidationResult = callbackUrls.validate();
-            if (!callbackUrlsValidationResult.isValid()) {
-                isValid = false;
-                message.append(callbackUrlsValidationResult.getMessage());
             }
         }
 

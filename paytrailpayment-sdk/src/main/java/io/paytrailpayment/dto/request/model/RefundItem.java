@@ -5,15 +5,17 @@ import io.paytrailpayment.dto.request.Request;
 import io.paytrailpayment.dto.request.ValidationResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class RefundItem extends Request {
     /**
-     * Total amount to refund this item, in currency's minor units (ie. EUR cents).
+     * Total amount to refund this item, in currency's minor units.
      */
     private int amount;
 
@@ -48,7 +50,7 @@ public class RefundItem extends Request {
             message.append("Item's unitPrice can't be a negative number. ");
         }
 
-        if (stamp == null)
+        if (stamp == null || stamp.isEmpty())
         {
             isValid = false;
             message.append("Item's stamp can't be null. ");
