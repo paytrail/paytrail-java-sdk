@@ -26,20 +26,20 @@ public abstract class Paytrail {
         Date datetime = new Date();
         Map<String, String> headers = new HashMap<>();
         try {
-            headers.put("checkout-account", this.merchantId);
-            headers.put("checkout-algorithm", "sha256");
-            headers.put("checkout-method", method.toUpperCase());
-            headers.put("checkout-nonce", UUID.randomUUID().toString());
-            headers.put("checkout-timestamp", String.format("%tFT%<tT.%<tLZ", datetime));
-            headers.put("platform-name", this.platformName);
-            headers.put("content-type", "application/json; charset=utf-8");
+            headers.put(Constants.CHECKOUT_ACCOUNT_HEADER, this.merchantId);
+            headers.put(Constants.CHECKOUT_ALGORITHM_HEADER, Constants.SHA256_ALGORITHM);
+            headers.put(Constants.CHECKOUT_METHOD_HEADER, method.toUpperCase());
+            headers.put(Constants.CHECKOUT_NONCE_HEADER, UUID.randomUUID().toString());
+            headers.put(Constants.CHECKOUT_TIMESTAMP_HEADER, String.format("%tFT%<tT.%<tLZ", datetime));
+            headers.put(Constants.PLATFORM_NAME_HEADER, this.platformName);
+            headers.put(Constants.CONTENT_TYPE_HEADER, Constants.CONTENT_TYPE);
 
             if (transactionId != null && !transactionId.isEmpty()) {
-                headers.put("checkout-transaction-id", transactionId);
+                headers.put(Constants.CHECKOUT_TRANSACTION_ID_HEADER, transactionId);
             }
 
             if (checkoutTokenizationId != null && !checkoutTokenizationId.isEmpty()) {
-                headers.put("checkout-tokenization-id", checkoutTokenizationId);
+                headers.put(Constants.CHECKOUT_TOKENIZATION_ID_HEADER, checkoutTokenizationId);
             }
 
             return headers;
@@ -58,7 +58,7 @@ public abstract class Paytrail {
             body = "";
         }
 
-        return Signature.calculateHmac(this.secretKey, hdparams, body, "sha256");
+        return Signature.calculateHmac(this.secretKey, hdparams, body, Constants.SHA256_ALGORITHM);
     }
 
     protected DataResponse handleRequest(String method, String url, String body, String transactionId, String checkoutTokenizationId) {
@@ -74,7 +74,7 @@ public abstract class Paytrail {
                 return res;
             }
 
-            hdparams = getHeaders(hdparams, "signature", signature);
+            hdparams = getHeaders(hdparams, Constants.SIGNATURE_HEADER, signature);
 
             // Create new request
             HttpClient httpClient = HttpClientBuilder.create().build();
