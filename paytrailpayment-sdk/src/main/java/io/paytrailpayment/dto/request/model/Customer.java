@@ -3,9 +3,13 @@ package io.paytrailpayment.dto.request.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.paytrailpayment.dto.request.Request;
 import io.paytrailpayment.dto.request.ValidationResult;
+import io.paytrailpayment.utilites.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Data
 @NoArgsConstructor
@@ -47,9 +51,15 @@ public class Customer extends Request {
         boolean isValid = true;
         StringBuilder message = new StringBuilder();
 
+        Pattern emailPattern = Pattern.compile(Constants.EMAIL_REGEX);
+        Matcher emailMatcher = emailPattern.matcher(email);
+
         if (email == null) {
             isValid = false;
             message.append("Customer's email can't be null. ");
+        } else if (!emailMatcher.matches()) {
+            isValid = false;
+            message.append("Customer's email is not a valid email address. ");
         } else if (email.length() > 200) {
             isValid = false;
             message.append("Customer's email is more than 200 characters. ");

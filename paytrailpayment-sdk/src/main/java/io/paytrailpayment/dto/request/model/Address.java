@@ -42,7 +42,7 @@ public class Address extends Request {
         boolean isValid = true;
         StringBuilder message = new StringBuilder();
 
-        if (streetAddress == null) {
+        if (streetAddress == null || streetAddress.isEmpty()) {
             message.append("Address's streetAddress can't be null. ");
             isValid = false;
         } else if (streetAddress.length() > 50) {
@@ -50,7 +50,7 @@ public class Address extends Request {
             isValid = false;
         }
 
-        if (postalCode == null) {
+        if (postalCode == null || postalCode.isEmpty()) {
             message.append("Address's postalCode can't be null. ");
             isValid = false;
         } else if (postalCode.length() > 15) {
@@ -58,7 +58,7 @@ public class Address extends Request {
             isValid = false;
         }
 
-        if (city == null) {
+        if (city == null || city.isEmpty()) {
             message.append("Address's city can't be null. ");
             isValid = false;
         } else if (city.length() > 30) {
@@ -66,10 +66,11 @@ public class Address extends Request {
             isValid = false;
         }
 
-        if (country == null) {
+        if (country == null || country.isEmpty()) {
             message.append("Address's country can't be null. ");
             isValid = false;
         }
+
         return new ValidationResult(isValid, message);
     }
 }
