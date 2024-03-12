@@ -78,6 +78,32 @@ public class CreateRefundRequestUnitTest extends TestCase {
     }
 
     @Test()
+    public void shouldReturnStatusCode400WithFieldRequiredNotFilled() {
+        String messageExpect = "Item's unitPrice can't be a negative number. Object callbackUrls can't be null. ";
+        CreateRefundRequest req = new CreateRefundRequest();
+
+        req.setEmail("test@gmail.com");
+        req.setRefundStamp(UUID.randomUUID().toString());
+        req.setRefundReference(UUID.randomUUID().toString());
+
+        List<RefundItem> items = new ArrayList<>();
+        RefundItem item = new RefundItem();
+        item.setAmount(-1590);
+        item.setStamp(UUID.randomUUID().toString());
+        item.setRefundStamp(UUID.randomUUID().toString());
+        items.add(item);
+
+        req.setItems(items);
+
+        CreateRefundResponse res = client.createRefundRequest(req, transactionId);
+
+        assertNotNull(res);
+        assertEquals(ResponseMessage.BAD_REQUEST.getCode(), res.getReturnCode());
+        assertEquals(messageExpect, res.getReturnMessage());
+        assertNull(res.getData());
+    }
+
+    @Test()
     public void shouldReturnStatusCode400WithPayloadValidateFail() {
         CreateRefundRequest req = new CreateRefundRequest();
 

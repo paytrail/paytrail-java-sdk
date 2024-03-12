@@ -32,6 +32,50 @@ public class CreatePaymentUnitTest extends TestCase {
     }
 
     @Test()
+    public void shouldReturnStatusCode400WithFieldRequiredNotFilled() {
+        String messageExpect = "Amount must be more than zero. Amount doesn't match ItemsTotal. Stamp can't be null or empty. Reference can't be null. Currency can't be null. Currency can't be null. ";
+        CreatePaymentRequest req = new CreatePaymentRequest();
+
+        req.setOrderId("12335");
+
+        List<Item> items = new ArrayList<>();
+        Item item = new Item();
+        item.setUnitPrice(1590);
+        item.setUnits(1);
+        item.setVatPercentage(24);
+        item.setProductCode("#927502759");
+        items.add(item);
+
+        req.setItems(items);
+
+        Customer customer = new Customer();
+        customer.setEmail("erja.esimerkki@example.org");
+        customer.setFirstName("TEST");
+        customer.setLastName("test");
+        customer.setPhone("0369874566");
+        customer.setVatId("156988");
+        customer.setCompanyName("ttest");
+        req.setCustomer(customer);
+
+        CallbackUrl redirectUrls = new CallbackUrl();
+        redirectUrls.setSuccess("https://ecom.example.org/success");
+        redirectUrls.setCancel("https://ecom.example.org/cancel");
+        req.setRedirectUrls(redirectUrls);
+
+        CallbackUrl callbackUrls = new CallbackUrl();
+        callbackUrls.setSuccess("https://ecom.example.org/success");
+        callbackUrls.setCancel("https://ecom.example.org/cancel");
+        req.setCallbackUrls(callbackUrls);
+
+        CreatePaymentResponse res = client.createPayment(req);
+
+        assertNotNull(res);
+        assertEquals(ResponseMessage.BAD_REQUEST.getCode(), res.getReturnCode());
+        assertEquals(messageExpect, res.getReturnMessage());
+        assertNull(res.getData());
+    }
+
+    @Test()
     public void shouldReturnStatusCode400WithPayloadValidateFail() {
         CreatePaymentRequest req = new CreatePaymentRequest();
 
