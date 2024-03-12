@@ -3,18 +3,23 @@ package io.paytrailpayment.dto.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.paytrailpayment.dto.request.model.CallbackUrl;
 import io.paytrailpayment.dto.request.model.RefundItem;
+import io.paytrailpayment.utilites.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class CreateRefundRequest extends Request {
     /**
-     * Total amount to refund, in currency's minor units (ie. EUR cents). Required for normal payment refunds.
+     * Total amount to refund, in currency's minor units. Required for normal payment refunds.
      */
     private int amount;
 
@@ -48,6 +53,9 @@ public class CreateRefundRequest extends Request {
         StringBuilder message = new StringBuilder();
         boolean isValid = true;
 
+        Pattern emailPattern = Pattern.compile(Constants.EMAIL_REGEX);
+        Matcher emailMatcher = emailPattern.matcher(email);
+
         if (items != null) {
             for (RefundItem item : items) {
                 ValidationResult itemValidationResult = item.validate();
@@ -57,6 +65,11 @@ public class CreateRefundRequest extends Request {
                     break;
                 }
             }
+        }
+
+        if (email != null && !emailMatcher.matches()) {
+            isValid = false;
+            message.append("Email is not a valid email address. ");
         }
 
         if (callbackUrls == null) {

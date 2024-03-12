@@ -1,8 +1,5 @@
 package io.paytrailpayment.utilites;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Constants {
     public static final String API_ENDPOINT = "https://services.paytrail.com";
     public static final String CHECKOUT_ACCOUNT = "checkout-account";
@@ -27,6 +24,10 @@ public class Constants {
     public static final String MESSAGE_CHECKOUT_REDIRECT_SUCCESS_URL_EMPTY = "checkout-redirect success url is empty. ";
     public static final String MESSAGE_CHECKOUT_REDIRECT_CANCEL_URL_EMPTY = "checkout-redirect cancel url is empty. ";
     public static final String MESSAGE_UNSUPPORTED_LANGUAGE = "unsupported language chosen. ";
+
+    public static final String EMAIL_REGEX =
+            "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+
 
     public static final String POST_METHOD = "POST";
     public static final String GET_METHOD = "GET";

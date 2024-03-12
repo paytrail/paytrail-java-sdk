@@ -5,6 +5,8 @@ import io.paytrailpayment.dto.request.model.CallbackUrl;
 import io.paytrailpayment.dto.request.model.Customer;
 import io.paytrailpayment.dto.request.model.Item;
 import io.paytrailpayment.dto.response.CreatePaymentResponse;
+import io.paytrailpayment.utilites.ResponseMessage;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -53,6 +55,8 @@ public class Main {
 
         CreatePaymentResponse res = client.createPayment(req);
 
-        System.out.println(res);
+        System.out.println(res.getReturnCode());
+        System.out.println(res.getReturnMessage());
+        System.out.println(res.getData());
     }
 }

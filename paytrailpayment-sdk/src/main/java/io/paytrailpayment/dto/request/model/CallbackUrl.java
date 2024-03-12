@@ -27,12 +27,12 @@ public class CallbackUrl extends Request {
         boolean isValid = true;
         StringBuilder message = new StringBuilder();
 
-        if (success == null) {
+        if (success == null || success.isEmpty()) {
             isValid = false;
             message.append("Url success can't be null. ");
         }
 
-        if (cancel == null) {
+        if (cancel == null || cancel.isEmpty()) {
             isValid = false;
             message.append("Url cancel can't be null. ");
         }

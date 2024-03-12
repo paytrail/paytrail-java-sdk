@@ -73,7 +73,7 @@ public class GetPaymentUnitTest extends TestCase {
         assertNotNull(res);
         assertNotNull(res.getData());
         assertEquals(ResponseMessage.OK.getCode(), res.getReturnCode());
-        assertEquals(ResponseMessage.CREATED.getDescription(), res.getReturnMessage());
+        assertEquals(ResponseMessage.OK.getDescription(), res.getReturnMessage());
     }
 
     @Test()
@@ -101,6 +101,6 @@ public class GetPaymentUnitTest extends TestCase {
         GetPaymentResponse res = client.getPaymentInfo(transactionId);
 
         assertNotNull(res);
-        assertEquals(401, res.getReturnCode());
+        assertEquals(ResponseMessage.UNAUTHORIZED.getCode(), res.getReturnCode());
     }
 }
