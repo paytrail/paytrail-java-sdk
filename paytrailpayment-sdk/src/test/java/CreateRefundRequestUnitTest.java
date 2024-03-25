@@ -1,10 +1,7 @@
 import io.paytrailpayment.PaytrailClient;
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
 import io.paytrailpayment.dto.request.CreateRefundRequest;
-import io.paytrailpayment.dto.request.model.CallbackUrl;
-import io.paytrailpayment.dto.request.model.Customer;
-import io.paytrailpayment.dto.request.model.Item;
-import io.paytrailpayment.dto.request.model.RefundItem;
+import io.paytrailpayment.dto.request.model.*;
 import io.paytrailpayment.dto.response.CreatePaymentResponse;
 import io.paytrailpayment.dto.response.CreateRefundResponse;
 import io.paytrailpayment.utilites.ResponseMessage;
@@ -29,8 +26,8 @@ public class CreateRefundRequestUnitTest extends TestCase {
 
         req.setStamp(UUID.randomUUID().toString());
         req.setReference("9187445");
-        req.setCurrency("EUR");
-        req.setLanguage("FI");
+        req.setCurrency(Currency.EUR);
+        req.setLanguage(Language.FI);
         req.setOrderId("12335");
         req.setAmount(1590);
 
@@ -69,7 +66,7 @@ public class CreateRefundRequestUnitTest extends TestCase {
     }
 
     @Test()
-    public void shouldReturnStatusCode400WithPayloadNull() {
+    public void createRefundRequestReturnStatusCode400WithPayloadNull() {
         CreateRefundResponse res = client.createRefundRequest(null, null);
 
         assertNotNull(res);
@@ -78,7 +75,7 @@ public class CreateRefundRequestUnitTest extends TestCase {
     }
 
     @Test()
-    public void shouldReturnStatusCode400WithFieldRequiredNotFilled() {
+    public void createRefundRequestReturnStatusCode400WithFieldRequiredNotFilled() {
         String messageExpect = "Item's unitPrice can't be a negative number. Object callbackUrls can't be null. ";
         CreateRefundRequest req = new CreateRefundRequest();
 
@@ -104,7 +101,7 @@ public class CreateRefundRequestUnitTest extends TestCase {
     }
 
     @Test()
-    public void shouldReturnStatusCode400WithPayloadValidateFail() {
+    public void createRefundRequestReturnStatusCode400WithPayloadValidateFail() {
         CreateRefundRequest req = new CreateRefundRequest();
 
         req.setAmount(1590);
@@ -134,7 +131,7 @@ public class CreateRefundRequestUnitTest extends TestCase {
     }
 
     @Test()
-    public void shouldReturnStatusCode201() {
+    public void createRefundRequestReturnStatusCode201() {
         CreateRefundRequest req = new CreateRefundRequest();
 
         req.setAmount(1590);
@@ -162,7 +159,7 @@ public class CreateRefundRequestUnitTest extends TestCase {
     }
 
     @Test()
-    public void shouldReturnStatusCode401() {
+    public void createRefundRequestReturnStatusCode401WithFalseAuthenticationInformation() {
         client = new PaytrailClient("375918", "SAIPPUAKAUPPIAS", "test");
         CreateRefundRequest req = new CreateRefundRequest();
 
