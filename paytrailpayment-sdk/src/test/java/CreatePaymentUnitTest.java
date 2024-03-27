@@ -1,8 +1,7 @@
 import io.paytrailpayment.PaytrailClient;
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
-import io.paytrailpayment.dto.request.model.CallbackUrl;
-import io.paytrailpayment.dto.request.model.Customer;
-import io.paytrailpayment.dto.request.model.Item;
+import io.paytrailpayment.dto.request.model.*;
+import io.paytrailpayment.dto.request.model.Currency;
 import io.paytrailpayment.dto.response.CreatePaymentResponse;
 
 import io.paytrailpayment.utilites.ResponseMessage;
@@ -23,7 +22,7 @@ public class CreatePaymentUnitTest extends TestCase {
     }
 
     @Test()
-    public void shouldReturnStatusCode400WithPayloadNull() {
+    public void createPaymentReturnStatusCode400WithPayloadNull() {
         CreatePaymentResponse res = client.createPayment(null);
 
         assertNotNull(res);
@@ -32,7 +31,7 @@ public class CreatePaymentUnitTest extends TestCase {
     }
 
     @Test()
-    public void shouldReturnStatusCode400WithFieldRequiredNotFilled() {
+    public void createPaymentReturnStatusCode400WithFieldRequiredNotFilled() {
         String messageExpect = "Amount must be more than zero. Amount doesn't match ItemsTotal. Stamp can't be null or empty. Reference can't be null. Currency can't be null. Currency can't be null. ";
         CreatePaymentRequest req = new CreatePaymentRequest();
 
@@ -76,13 +75,13 @@ public class CreatePaymentUnitTest extends TestCase {
     }
 
     @Test()
-    public void shouldReturnStatusCode400WithPayloadValidateFail() {
+    public void createPaymentReturnStatusCode400WithPayloadValidateFail() {
         CreatePaymentRequest req = new CreatePaymentRequest();
 
         req.setStamp(UUID.randomUUID().toString());
         req.setReference("9187445");
-        req.setCurrency("EUR");
-        req.setLanguage("FI");
+        req.setCurrency(Currency.EUR);
+        req.setLanguage(Language.EN);
         req.setAmount(-1590);
 
         CreatePaymentResponse res = client.createPayment(req);
@@ -93,13 +92,13 @@ public class CreatePaymentUnitTest extends TestCase {
     }
 
     @Test()
-    public void shouldReturnStatusCode201() {
+    public void createPaymentReturnStatusCode201() {
         CreatePaymentRequest req = new CreatePaymentRequest();
 
         req.setStamp(UUID.randomUUID().toString());
         req.setReference("9187445");
-        req.setCurrency("EUR");
-        req.setLanguage("FI");
+        req.setCurrency(Currency.EUR);
+        req.setLanguage(Language.EN);
         req.setOrderId("12335");
         req.setAmount(1590);
 
@@ -141,15 +140,15 @@ public class CreatePaymentUnitTest extends TestCase {
     }
 
     @Test()
-    public void shouldReturnStatusCode401() {
+    public void createPaymentReturnStatusCode401WithFalseAuthenticationInformation() {
         client = new PaytrailClient("375918", "SAIPPUAKAUPPIAS", "test");
 
         CreatePaymentRequest req = new CreatePaymentRequest();
 
         req.setStamp(UUID.randomUUID().toString());
         req.setReference("9187445");
-        req.setCurrency("EUR");
-        req.setLanguage("FI");
+        req.setCurrency(Currency.EUR);
+        req.setLanguage(Language.EN);
         req.setOrderId("12335");
         req.setAmount(1590);
 

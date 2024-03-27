@@ -11,9 +11,11 @@ import io.paytrailpayment.dto.response.data.CreateRefundData;
 import io.paytrailpayment.dto.response.data.DataResponse;
 import io.paytrailpayment.dto.response.data.CreatePaymentData;
 import io.paytrailpayment.dto.response.data.GetPaymentData;
+import io.paytrailpayment.exception.AppException;
 import io.paytrailpayment.utilites.Constants;
 import io.paytrailpayment.utilites.ResponseMessage;
 import lombok.*;
+
 import static io.paytrailpayment.utilites.Constants.GET_METHOD;
 
 @NoArgsConstructor
@@ -40,9 +42,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
 
             return res;
         } catch (Exception e) {
-            res.setReturnCode(ResponseMessage.RESPONSE_ERROR.getCode());
-            res.setReturnMessage(e.toString());
-            return res;
+            throw new AppException(ResponseMessage.RESPONSE_ERROR.getCode(), e.toString());
         }
     }
 
@@ -59,9 +59,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
 
             return res;
         } catch (Exception e) {
-            res.setReturnCode(ResponseMessage.RESPONSE_ERROR.getCode());
-            res.setReturnMessage(e.toString());
-            return res;
+            throw new AppException(ResponseMessage.RESPONSE_ERROR.getCode(), e.toString());
         }
     }
 
@@ -80,9 +78,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
 
             return res;
         } catch (Exception e) {
-            res.setReturnCode(ResponseMessage.RESPONSE_ERROR.getCode());
-            res.setReturnMessage(e.toString());
-            return res;
+            throw new AppException(ResponseMessage.RESPONSE_ERROR.getCode(), e.toString());
         }
     }
 
@@ -93,8 +89,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             String targetURL = Constants.API_ENDPOINT + "/payments";
             DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, body, null, null);
 
-            if (data.getStatusCode() != ResponseMessage.OK.getCode()
-                    && data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
+            if (data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
                 res.setReturnCode(data.getStatusCode());
                 res.setReturnMessage(data.getData());
             } else {
@@ -109,9 +104,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             return res;
 
         } catch (Exception e) {
-            res.setReturnCode(ResponseMessage.RESPONSE_ERROR.getCode());
-            res.setReturnMessage(e.toString());
-            return res;
+            throw new AppException(ResponseMessage.RESPONSE_ERROR.getCode(), e.toString());
         }
     }
 
@@ -122,8 +115,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             String targetURL = Constants.API_ENDPOINT + "/payments/" + transactionId;
             DataResponse data = this.handleRequest(GET_METHOD, targetURL, null, transactionId, null);
 
-            if (data.getStatusCode() != ResponseMessage.OK.getCode()
-                    && data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
+            if (data.getStatusCode() != ResponseMessage.OK.getCode()) {
                 res.setReturnCode(data.getStatusCode());
                 res.setReturnMessage(data.getData());
             } else {
@@ -138,9 +130,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             return res;
 
         } catch (Exception e) {
-            res.setReturnCode(ResponseMessage.RESPONSE_ERROR.getCode());
-            res.setReturnMessage(e.toString());
-            return res;
+            throw new AppException(ResponseMessage.RESPONSE_ERROR.getCode(), e.toString());
         }
     }
 
@@ -151,8 +141,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             String targetURL = Constants.API_ENDPOINT + "/payments/" + transactionId + "/refund";
             DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, body, transactionId, null);
 
-            if (data.getStatusCode() != ResponseMessage.OK.getCode()
-                    && data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
+            if (data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
                 res.setReturnCode(data.getStatusCode());
                 res.setReturnMessage(data.getData());
             } else {
@@ -167,9 +156,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             return res;
 
         } catch (Exception e) {
-            res.setReturnCode(ResponseMessage.RESPONSE_ERROR.getCode());
-            res.setReturnMessage(e.toString());
-            return res;
+            throw new AppException(ResponseMessage.RESPONSE_ERROR.getCode(), e.toString());
         }
     }
 

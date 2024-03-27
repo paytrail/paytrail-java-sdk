@@ -77,9 +77,9 @@ public class Item extends Request {
             message.append("Item's unitPrice can't be a negative number. ");
         }
 
-        if (units < 0) {
+        if (units < 0 || units > 99999998) {
             isValid = false;
-            message.append("Item's units can't be a negative number. ");
+            message.append("Item's units are invalid. ");
         }
 
         if (vatPercentage < 0) {
@@ -93,6 +93,11 @@ public class Item extends Request {
         } else if (productCode.length() > 100) {
             isValid = false;
             message.append("Item's productCode is more than 100 characters. ");
+        }
+
+        if (category != null && category.length() > 100) {
+            isValid = false;
+            message.append("Item's category is more than 100 characters. ");
         }
 
         if (description != null && description.length() > 1000) {

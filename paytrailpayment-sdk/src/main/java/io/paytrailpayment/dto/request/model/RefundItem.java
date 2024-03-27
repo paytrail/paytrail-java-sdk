@@ -44,16 +44,26 @@ public class RefundItem extends Request {
         boolean isValid = true;
         StringBuilder message = new StringBuilder();
 
-        if (amount < 0)
+        if (amount < 0 || amount > 99999998)
         {
             isValid = false;
-            message.append("Item's unitPrice can't be a negative number. ");
+            message.append("Item's amount are invalid. ");
         }
 
         if (stamp == null || stamp.isEmpty())
         {
             isValid = false;
             message.append("Item's stamp can't be null. ");
+        }
+
+        if (stamp != null && stamp.length() > 200) {
+            isValid = false;
+            message.append("Item's stamp is more than 200 characters. ");
+        }
+
+        if (refundStamp != null && refundStamp.length() > 200) {
+            isValid = false;
+            message.append("Item's refundStamp is more than 200 characters. ");
         }
 
         if (commission != null)

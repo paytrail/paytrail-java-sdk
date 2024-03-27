@@ -71,6 +71,11 @@ public class Address extends Request {
             isValid = false;
         }
 
+        if (county != null && county.length() > 200) {
+            message.append("Address's county is more than 200 characters. ");
+            isValid = false;
+        }
+
         return new ValidationResult(isValid, message);
     }
 }
