@@ -76,7 +76,7 @@ public class CreateRefundRequestUnitTest extends TestCase {
 
     @Test()
     public void createRefundRequestReturnStatusCode400WithFieldRequiredNotFilled() {
-        String messageExpect = "Item's unitPrice can't be a negative number. Object callbackUrls can't be null. ";
+        String messageExpect = "Item's amount are invalid. Object callbackUrls can't be null. ";
         CreateRefundRequest req = new CreateRefundRequest();
 
         req.setEmail("test@gmail.com");

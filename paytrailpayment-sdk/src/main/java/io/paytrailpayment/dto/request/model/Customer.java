@@ -70,9 +70,14 @@ public class Customer extends Request {
             message.append("Customer's firstName is more than 50 characters. ");
         }
 
-        if (lastName != null && lastName.length() > 100) {
+        if (lastName != null && lastName.length() > 50) {
             isValid = false;
             message.append("Customer's lastName is more than 50 characters. ");
+        }
+
+        if (companyName != null && companyName.length() > 100) {
+            isValid = false;
+            message.append("Customer's companyName is more than 100 characters. ");
         }
 
         return new ValidationResult(isValid, message);
