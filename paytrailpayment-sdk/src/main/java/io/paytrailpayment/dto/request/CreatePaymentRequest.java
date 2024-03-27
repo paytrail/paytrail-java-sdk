@@ -103,9 +103,6 @@ public class CreatePaymentRequest extends Request {
 
     @Override()
     protected ValidationResult specificValidate() {
-        String[] supportedCurrencies = {"EUR"};
-        String[] supportedLanguages = {"FI", "SV", "EN"};
-
         StringBuilder message = new StringBuilder();
         boolean isValid = true;
 
@@ -115,6 +112,13 @@ public class CreatePaymentRequest extends Request {
         } else if (amount > 99999999) {
             isValid = false;
             message.append("Amount can't be more than 99999999. ");
+        }
+
+        if (orderId == null || orderId.isEmpty()) {
+            if (reference == null || reference.isEmpty()) {
+                isValid = false;
+                message.append("OrderId is not provided, then reference must be provided. ");
+            }
         }
 
         if (items != null) {
