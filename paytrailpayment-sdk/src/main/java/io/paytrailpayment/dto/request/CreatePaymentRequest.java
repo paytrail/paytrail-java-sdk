@@ -3,7 +3,6 @@ package io.paytrailpayment.dto.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.paytrailpayment.dto.request.model.*;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+
 public class CreatePaymentRequest extends Request {
     /**
      * Merchant unique identifier for the order. Maximum of 200 characters.
@@ -37,12 +37,12 @@ public class CreatePaymentRequest extends Request {
     /**
      * Currency, only EUR supported at the moment.
      */
-    private String currency;
+    private Currency currency;
 
     /**
      * Payment's language, currently supported are FI, SV, and EN.
      */
-    private String language;
+    private Language language;
 
     /**
      * Order ID. Used for e.g. Walley/Collector payments order ID.
@@ -103,9 +103,6 @@ public class CreatePaymentRequest extends Request {
 
     @Override()
     protected ValidationResult specificValidate() {
-        String[] supportedCurrencies = {"EUR"};
-        String[] supportedLanguages = {"FI", "SV", "EN"};
-
         StringBuilder message = new StringBuilder();
         boolean isValid = true;
 
@@ -115,6 +112,13 @@ public class CreatePaymentRequest extends Request {
         } else if (amount > 99999999) {
             isValid = false;
             message.append("Amount can't be more than 99999999. ");
+        }
+
+        if (orderId == null || orderId.isEmpty()) {
+            if (reference == null || reference.isEmpty()) {
+                isValid = false;
+                message.append("OrderId is not provided, then reference must be provided. ");
+            }
         }
 
         if (items != null) {
@@ -153,20 +157,14 @@ public class CreatePaymentRequest extends Request {
             message.append("Reference is more than 200 characters. ");
         }
 
-        if (currency == null || currency.isEmpty()) {
+        if (currency == null) {
             isValid = false;
             message.append("Currency can't be null. ");
-        } else if (!Arrays.asList(supportedCurrencies).contains(currency)) {
-            isValid = false;
-            message.append("Unsupported currency chosen. ");
         }
 
-        if (language == null || language.isEmpty()) {
+        if (language == null) {
             isValid = false;
             message.append("Currency can't be null. ");
-        } else if (!Arrays.asList(supportedLanguages).contains(language)) {
-            isValid = false;
-            message.append("Unsupported language chosen. ");
         }
 
         if (customer == null) {

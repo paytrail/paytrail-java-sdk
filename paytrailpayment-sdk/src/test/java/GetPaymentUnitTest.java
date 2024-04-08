@@ -1,8 +1,6 @@
 import io.paytrailpayment.PaytrailClient;
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
-import io.paytrailpayment.dto.request.model.CallbackUrl;
-import io.paytrailpayment.dto.request.model.Customer;
-import io.paytrailpayment.dto.request.model.Item;
+import io.paytrailpayment.dto.request.model.*;
 import io.paytrailpayment.dto.response.CreatePaymentResponse;
 import io.paytrailpayment.dto.response.GetPaymentResponse;
 import io.paytrailpayment.utilites.ResponseMessage;
@@ -27,8 +25,8 @@ public class GetPaymentUnitTest extends TestCase {
 
         req.setStamp(UUID.randomUUID().toString());
         req.setReference("9187445");
-        req.setCurrency("EUR");
-        req.setLanguage("FI");
+        req.setCurrency(Currency.EUR);
+        req.setLanguage(Language.SV);
         req.setOrderId("12335");
         req.setAmount(1590);
 
@@ -67,7 +65,7 @@ public class GetPaymentUnitTest extends TestCase {
     }
 
     @Test()
-    public void ShouldReturnStatusCode200() {
+    public void getPaymentReturnStatusCode200() {
         GetPaymentResponse res = client.getPaymentInfo(transactionId);
 
         assertNotNull(res);
@@ -77,7 +75,7 @@ public class GetPaymentUnitTest extends TestCase {
     }
 
     @Test()
-    public void ShouldReturnStatusCode400WithPayloadNull() {
+    public void getPaymentReturnStatusCode400WithPayloadNull() {
         GetPaymentResponse res = client.getPaymentInfo(null);
 
         assertNotNull(res);
@@ -86,7 +84,7 @@ public class GetPaymentUnitTest extends TestCase {
     }
 
     @Test()
-    public void ShouldReturnStatusCode400WithPayloadValidateFail() {
+    public void getPaymentReturnStatusCode400WithPayloadValidateFail() {
         GetPaymentResponse res = client.getPaymentInfo("");
 
         assertNotNull(res);
@@ -95,7 +93,7 @@ public class GetPaymentUnitTest extends TestCase {
     }
 
     @Test()
-    public void ShouldReturnStatusCode401() {
+    public void getPaymentReturnStatusCode401WithFalseAuthenticationInformation() {
         client = new PaytrailClient("375918", "SAIPPUAKAUPPIAS", "test");
 
         GetPaymentResponse res = client.getPaymentInfo(transactionId);
