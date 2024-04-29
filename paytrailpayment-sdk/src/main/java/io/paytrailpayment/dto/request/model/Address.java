@@ -6,6 +6,7 @@ import io.paytrailpayment.dto.request.ValidationResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 @NoArgsConstructor
@@ -38,44 +39,31 @@ public class Address extends Request {
     private String country;
 
     @Override
-    protected ValidationResult specificValidate() {
-        boolean isValid = true;
-        StringBuilder message = new StringBuilder();
-
-        if (streetAddress == null || streetAddress.isEmpty()) {
-            message.append("Address's streetAddress can't be null. ");
-            isValid = false;
+    protected void specificValidate() {
+        if (StringUtils.isBlank(streetAddress)) {
+            addValidationError("streetAddress", "Address's streetAddress can't be null or empty.");
         } else if (streetAddress.length() > 50) {
-            message.append("Address's streetAddress is more than 50 characters. ");
-            isValid = false;
+            addValidationError("streetAddress", "Address's streetAddress is more than 50 characters.");
         }
 
-        if (postalCode == null || postalCode.isEmpty()) {
-            message.append("Address's postalCode can't be null. ");
-            isValid = false;
+        if (StringUtils.isBlank(postalCode)) {
+            addValidationError("postalCode", "Address's postalCode can't be null or empty.");
         } else if (postalCode.length() > 15) {
-            message.append("Address's postalCode is more than 15 characters. ");
-            isValid = false;
+            addValidationError("postalCode", "Address's postalCode is more than 15 characters.");
         }
 
-        if (city == null || city.isEmpty()) {
-            message.append("Address's city can't be null. ");
-            isValid = false;
+        if (StringUtils.isBlank(city)) {
+            addValidationError("city", "Address's city can't be null or empty.");
         } else if (city.length() > 30) {
-            message.append("Address's city is more than 30 characters. ");
-            isValid = false;
+            addValidationError("city", "Address's city is more than 30 characters.");
         }
 
-        if (country == null || country.isEmpty()) {
-            message.append("Address's country can't be null. ");
-            isValid = false;
+        if (StringUtils.isBlank(country)) {
+            addValidationError("country", "Address's country can't be null or empty.");
         }
 
-        if (county != null && county.length() > 200) {
-            message.append("Address's county is more than 200 characters. ");
-            isValid = false;
+        if (StringUtils.isNotBlank(county) && county.length() > 200) {
+            addValidationError("county", "Address's county is more than 200 characters.");
         }
-
-        return new ValidationResult(isValid, message);
     }
 }

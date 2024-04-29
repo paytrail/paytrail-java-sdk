@@ -10,6 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreatePaymentResponse extends Response {
     private CreatePaymentData data;
+
+    public CreatePaymentResponse(int statusCode, String description, CreatePaymentData dataMapper) {
+        super(statusCode, description);
+        this.data = dataMapper;
+    }
 }
 
 

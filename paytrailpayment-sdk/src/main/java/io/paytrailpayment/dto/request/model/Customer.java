@@ -7,7 +7,9 @@ import io.paytrailpayment.utilites.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,40 +49,26 @@ public class Customer extends Request {
     private String companyName;
 
     @Override()
-    protected ValidationResult specificValidate() {
-        boolean isValid = true;
-        StringBuilder message = new StringBuilder();
-
-        Pattern emailPattern = Pattern.compile(Constants.EMAIL_REGEX);
-        Matcher emailMatcher = emailPattern.matcher(email);
-
-        if (email == null) {
-            isValid = false;
-            message.append("Customer's email can't be null. ");
-        } else if (!emailMatcher.matches()) {
-            isValid = false;
-            message.append("Customer's email is not a valid email address. ");
+    protected void specificValidate() {
+        if (Objects.isNull(email)) {
+            addValidationError("email", "Customer's email can't be null.");
+        } else if (!Pattern.compile(Constants.EMAIL_REGEX).matcher(email).matches()) {
+            addValidationError("email", "Customer's email is not a valid email address.");
         } else if (email.length() > 200) {
-            isValid = false;
-            message.append("Customer's email is more than 200 characters. ");
+            addValidationError("email", "Customer's email is more than 200 characters.");
         }
 
-        if (firstName != null && firstName.length() > 50) {
-            isValid = false;
-            message.append("Customer's firstName is more than 50 characters. ");
+        if (Objects.nonNull(firstName) && firstName.length() > 50) {
+            addValidationError("firstName", "Customer's firstName is more than 50 characters.");
         }
 
-        if (lastName != null && lastName.length() > 50) {
-            isValid = false;
-            message.append("Customer's lastName is more than 50 characters. ");
+        if (Objects.nonNull(lastName) && lastName.length() > 50) {
+            addValidationError("lastName", "Customer's lastName is more than 50 characters.");
         }
 
-        if (companyName != null && companyName.length() > 100) {
-            isValid = false;
-            message.append("Customer's companyName is more than 100 characters. ");
+        if (Objects.nonNull(companyName) && companyName.length() > 100) {
+            addValidationError("companyName", "Customer's companyName is more than 100 characters.");
         }
-
-        return new ValidationResult(isValid, message);
     }
 }
 

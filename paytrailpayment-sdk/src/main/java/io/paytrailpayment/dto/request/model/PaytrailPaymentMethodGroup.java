@@ -1,6 +1,6 @@
 package io.paytrailpayment.dto.request.model;
 
-public enum PaymentMethodGroup {
+public enum PaytrailPaymentMethodGroup {
     mobile,
     bank,
     creditcard,
