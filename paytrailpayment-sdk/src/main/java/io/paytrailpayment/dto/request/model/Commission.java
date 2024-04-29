@@ -6,6 +6,7 @@ import io.paytrailpayment.dto.request.ValidationResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 @NoArgsConstructor
@@ -23,22 +24,16 @@ public class Commission extends Request {
     private int amount;
 
     @Override()
-    protected ValidationResult specificValidate() {
-        boolean isValid = true;
-        StringBuilder message = new StringBuilder();
-
-        if (merchant == null || merchant.isEmpty())
+    protected void specificValidate() {
+        if (StringUtils.isBlank(merchant))
         {
-            message.append("Commission's merchant is null or empty. ");
-            isValid = false;
+            addValidationError("merchant", "Commission's merchant is null or empty. ");
         }
 
         if (amount < 0)
         {
-            message.append("Commission's amount can't be a negative number. ");
-            isValid = false;
+            addValidationError("amount", "Commission's amount can't be a negative number. ");
         }
 
-        return new ValidationResult(isValid, message);
     }
 }

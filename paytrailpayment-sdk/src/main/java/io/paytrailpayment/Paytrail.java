@@ -1,6 +1,8 @@
 package io.paytrailpayment;
 
 import io.paytrailpayment.dto.response.data.DataResponse;
+import io.paytrailpayment.exception.PaytrailClientException;
+import io.paytrailpayment.exception.PaytrailCommunicationException;
 import io.paytrailpayment.utilites.Constants;
 import io.paytrailpayment.utilites.ResponseMessage;
 import io.paytrailpayment.utilites.Signature;
@@ -13,6 +15,7 @@ import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 
+import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -61,7 +64,7 @@ public abstract class Paytrail {
         return Signature.calculateHmac(this.secretKey, hdparams, body, Constants.SHA256_ALGORITHM);
     }
 
-    protected DataResponse handleRequest(String method, String url, String body, String transactionId, String checkoutTokenizationId) {
+    protected DataResponse handleRequest(String method, String url, String body, String transactionId, String checkoutTokenizationId) throws PaytrailClientException, PaytrailCommunicationException{
         DataResponse res = new DataResponse();
         try {
             Map<String, String> hdparams = getHeaders(method, transactionId, checkoutTokenizationId);
@@ -120,10 +123,12 @@ public abstract class Paytrail {
             }
 
             return res;
-        } catch (Exception ex) {
-            res.setStatusCode(ResponseMessage.RESPONSE_ERROR.getCode());
-            res.setData(ex.toString());
-            return res;
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            // throw the exception related to the client.
+            throw new PaytrailClientException(ResponseMessage.RESPONSE_ERROR.getCode(), e.toString(), e);
+        } catch (IOException e) {
+            // throw the exception related to the communication with the server.
+            throw new PaytrailCommunicationException(ResponseMessage.EXCEPTION.getCode(), e.getMessage(), e);
         }
     }
 }
