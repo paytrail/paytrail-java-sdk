@@ -1,9 +1,7 @@
 package io.paytrailpayment;
 
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
-import io.paytrailpayment.dto.request.model.CallbackUrl;
-import io.paytrailpayment.dto.request.model.Customer;
-import io.paytrailpayment.dto.request.model.Item;
+import io.paytrailpayment.dto.request.model.*;
 import io.paytrailpayment.dto.response.CreatePaymentResponse;
 import io.paytrailpayment.utilites.ResponseMessage;
 
@@ -19,8 +17,8 @@ public class Main {
 
         req.setStamp(UUID.randomUUID().toString());
         req.setReference("9187445");
-        req.setCurrency("EUR");
-        req.setLanguage("FI");
+        req.setCurrency(Currency.EUR);
+        req.setLanguage(Language.EN);
         req.setOrderId("12335");
         req.setAmount(1590);
 
