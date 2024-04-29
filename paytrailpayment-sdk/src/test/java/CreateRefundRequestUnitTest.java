@@ -26,8 +26,8 @@ public class CreateRefundRequestUnitTest extends TestCase {
 
         req.setStamp(UUID.randomUUID().toString());
         req.setReference("9187445");
-        req.setCurrency(Currency.EUR);
-        req.setLanguage(Language.FI);
+        req.setCurrency(PaytrailCurrency.EUR);
+        req.setLanguage(PaytrailLanguage.FI);
         req.setOrderId("12335");
         req.setAmount(1590);
 
@@ -76,7 +76,7 @@ public class CreateRefundRequestUnitTest extends TestCase {
 
     @Test()
     public void createRefundRequestReturnStatusCode400WithFieldRequiredNotFilled() {
-        String messageExpect = "Item's amount are invalid. Object callbackUrls can't be null. ";
+        String messageExpect = "{\"callbackUrls\":\"Callback Urls can't be null.\",\"items\":\"{\\\"amount\\\":\\\"Item's amount is invalid.\\\"}\"}\n";
         CreateRefundRequest req = new CreateRefundRequest();
 
         req.setEmail("test@gmail.com");
@@ -101,7 +101,7 @@ public class CreateRefundRequestUnitTest extends TestCase {
     }
 
     @Test()
-    public void createRefundRequestReturnStatusCode400WithPayloadValidateFail() {
+    public void createRefundRequestReturnStatusCode403WithPayloadValidateFail() {
         CreateRefundRequest req = new CreateRefundRequest();
 
         req.setAmount(1590);

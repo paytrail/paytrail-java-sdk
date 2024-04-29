@@ -1,6 +1,6 @@
 package io.paytrailpayment.dto.response.model;
 
-import io.paytrailpayment.dto.request.model.PaymentMethodGroup;
+import io.paytrailpayment.dto.request.model.PaytrailPaymentMethodGroup;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,7 @@ public class ApplePay {
     /**
      * Group.
      */
-    private PaymentMethodGroup group;
+    private PaytrailPaymentMethodGroup group;
 
     /**
      * Parameters.

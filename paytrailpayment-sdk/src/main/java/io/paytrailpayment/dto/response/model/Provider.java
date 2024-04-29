@@ -1,6 +1,6 @@
 package io.paytrailpayment.dto.response.model;
 
-import io.paytrailpayment.dto.request.model.PaymentMethodGroup;
+import io.paytrailpayment.dto.request.model.PaytrailPaymentMethodGroup;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,7 +33,7 @@ public class Provider {
      * Provider group. Provider groups allow presenting same type of providers in separate
      * groups which usually makes it easier for the customer to select a payment method.
      */
-    private PaymentMethodGroup group;
+    private PaytrailPaymentMethodGroup group;
 
     /**
      * ID of the provider.

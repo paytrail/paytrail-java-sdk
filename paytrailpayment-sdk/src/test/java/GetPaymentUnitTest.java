@@ -25,8 +25,8 @@ public class GetPaymentUnitTest extends TestCase {
 
         req.setStamp(UUID.randomUUID().toString());
         req.setReference("9187445");
-        req.setCurrency(Currency.EUR);
-        req.setLanguage(Language.SV);
+        req.setCurrency(PaytrailCurrency.EUR);
+        req.setLanguage(PaytrailLanguage.SV);
         req.setOrderId("12335");
         req.setAmount(1590);
 

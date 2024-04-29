@@ -49,40 +49,36 @@ public class CreateRefundRequest extends Request {
     private CallbackUrl callbackUrls;
 
     @Override()
-    protected ValidationResult specificValidate() {
-        StringBuilder message = new StringBuilder();
-        boolean isValid = true;
-
-        Pattern emailPattern = Pattern.compile(Constants.EMAIL_REGEX);
-        Matcher emailMatcher = emailPattern.matcher(email);
-
-        if (items != null) {
+    protected void specificValidate() {
+        if (items != null && !items.isEmpty()) {
             for (RefundItem item : items) {
                 ValidationResult itemValidationResult = item.validate();
                 if (!itemValidationResult.isValid()) {
-                    isValid = false;
-                    message.append(itemValidationResult.getMessage());
+                    addValidationError("items", itemValidationResult.getMessagesAsJson());
                     break;
                 }
             }
         }
 
-        if (email != null && !emailMatcher.matches()) {
-            isValid = false;
-            message.append("Email is not a valid email address. ");
+        // Validate email using Regex
+        if (email != null && !email.isEmpty()) {
+            Pattern emailPattern = Pattern.compile(Constants.EMAIL_REGEX);
+            Matcher emailMatcher = emailPattern.matcher(email);
+            if (!emailMatcher.matches()) {
+                addValidationError("email", "Email is not a valid email address.");
+            }
+        } else {
+            addValidationError("email", "Email cannot be null or empty.");
         }
 
+        // Validate callbackUrls
         if (callbackUrls == null) {
-            isValid = false;
-            message.append("Object callbackUrls can't be null. ");
+            addValidationError("callbackUrls", "Callback Urls can't be null.");
         } else {
             ValidationResult callbackUrlsValidationResult = callbackUrls.validate();
             if (!callbackUrlsValidationResult.isValid()) {
-                isValid = false;
-                message.append(callbackUrlsValidationResult.getMessage());
+                addValidationError("callbackUrls", callbackUrlsValidationResult.getMessagesAsJson());
             }
         }
-
-        return new ValidationResult(isValid, message);
     }
 }

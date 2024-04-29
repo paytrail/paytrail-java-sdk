@@ -6,6 +6,7 @@ import io.paytrailpayment.dto.request.ValidationResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 @NoArgsConstructor
@@ -23,19 +24,13 @@ public class CallbackUrl extends Request {
     private String cancel;
 
     @Override()
-    protected ValidationResult specificValidate() {
-        boolean isValid = true;
-        StringBuilder message = new StringBuilder();
-
-        if (success == null || success.isEmpty()) {
-            isValid = false;
-            message.append("Url success can't be null. ");
+    protected void specificValidate() {
+        if (StringUtils.isBlank(success)) {
+            addValidationError("success", "Url success can't be null or empty.");
         }
 
-        if (cancel == null || cancel.isEmpty()) {
-            isValid = false;
-            message.append("Url cancel can't be null. ");
+        if (StringUtils.isBlank(cancel)) {
+            addValidationError("cancel", "Url cancel can't be null or empty.");
         }
-        return new ValidationResult(isValid, message);
     }
 }
