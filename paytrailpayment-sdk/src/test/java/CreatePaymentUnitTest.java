@@ -1,7 +1,7 @@
 import io.paytrailpayment.PaytrailClient;
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
 import io.paytrailpayment.dto.request.model.*;
-import io.paytrailpayment.dto.request.model.Currency;
+import io.paytrailpayment.dto.request.model.PaytrailCurrency;
 import io.paytrailpayment.dto.response.CreatePaymentResponse;
 
 import io.paytrailpayment.utilites.ResponseMessage;
@@ -32,7 +32,7 @@ public class CreatePaymentUnitTest extends TestCase {
 
     @Test()
     public void createPaymentReturnStatusCode400WithFieldRequiredNotFilled() {
-        String messageExpect = "Amount must be more than zero. Amount doesn't match ItemsTotal. Stamp can't be null or empty. Reference can't be null. Currency can't be null. Currency can't be null. ";
+        String messageExpect = "{\"reference\":\"Reference can't be null or empty.\",\"amount\":\"Amount doesn't match total of items.\",\"stamp\":\"Stamp can't be null or empty.\",\"currency\":\"Currency can't be null.\",\"language\":\"Language can't be null.\"}";
         CreatePaymentRequest req = new CreatePaymentRequest();
 
         req.setOrderId("12335");
@@ -80,8 +80,8 @@ public class CreatePaymentUnitTest extends TestCase {
 
         req.setStamp(UUID.randomUUID().toString());
         req.setReference("9187445");
-        req.setCurrency(Currency.EUR);
-        req.setLanguage(Language.EN);
+        req.setCurrency(PaytrailCurrency.EUR);
+        req.setLanguage(PaytrailLanguage.EN);
         req.setAmount(-1590);
 
         CreatePaymentResponse res = client.createPayment(req);
@@ -97,8 +97,8 @@ public class CreatePaymentUnitTest extends TestCase {
 
         req.setStamp(UUID.randomUUID().toString());
         req.setReference("9187445");
-        req.setCurrency(Currency.EUR);
-        req.setLanguage(Language.EN);
+        req.setCurrency(PaytrailCurrency.EUR);
+        req.setLanguage(PaytrailLanguage.EN);
         req.setOrderId("12335");
         req.setAmount(1590);
 
@@ -147,8 +147,8 @@ public class CreatePaymentUnitTest extends TestCase {
 
         req.setStamp(UUID.randomUUID().toString());
         req.setReference("9187445");
-        req.setCurrency(Currency.EUR);
-        req.setLanguage(Language.EN);
+        req.setCurrency(PaytrailCurrency.EUR);
+        req.setLanguage(PaytrailLanguage.EN);
         req.setOrderId("12335");
         req.setAmount(1590);
 

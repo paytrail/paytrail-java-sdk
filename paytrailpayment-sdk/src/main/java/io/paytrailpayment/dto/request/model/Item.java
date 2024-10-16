@@ -68,44 +68,33 @@ public class Item extends Request {
     private Commission commission;
 
     @Override()
-    protected ValidationResult specificValidate() {
-        boolean isValid = true;
-        StringBuilder message = new StringBuilder();
-
+    protected void specificValidate() {
         if (unitPrice < 0) {
-            isValid = false;
-            message.append("Item's unitPrice can't be a negative number. ");
+            addValidationError("unitPrice", "Item's unit Price can't be a negative number.");
         }
 
         if (units < 0 || units > 99999998) {
-            isValid = false;
-            message.append("Item's units are invalid. ");
+            addValidationError("units", "Item's units are invalid. ");
         }
 
         if (vatPercentage < 0) {
-            isValid = false;
-            message.append("Item's vatPercentage can't be a negative number. ");
+            addValidationError("vatPercentage", "Item's vat Percentage can't be a negative number.");
         }
 
         if (productCode == null) {
-            isValid = false;
-            message.append("Item's productCode can't be null. ");
+            addValidationError("productCode", "Item's product Code can't be null or empty.");
         } else if (productCode.length() > 100) {
-            isValid = false;
-            message.append("Item's productCode is more than 100 characters. ");
+            addValidationError("productCode", "Item's product Code is more than 100 characters.");
         }
 
         if (category != null && category.length() > 100) {
-            isValid = false;
-            message.append("Item's category is more than 100 characters. ");
+            addValidationError("category", "Item's category is more than 100 characters.");
         }
 
         if (description != null && description.length() > 1000) {
-            isValid = false;
-            message.append("Item's description is more than 1000 characters. ");
+            addValidationError("description", "Item's description is more than 1000 characters.");
         }
 
-        return new ValidationResult(isValid, message);
     }
 }
 

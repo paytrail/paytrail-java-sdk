@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Objects;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -40,42 +43,29 @@ public class RefundItem extends Request {
     private Commission commission;
 
     @Override()
-    protected ValidationResult specificValidate() {
-        boolean isValid = true;
-        StringBuilder message = new StringBuilder();
-
+    protected void specificValidate() {
         if (amount < 0 || amount > 99999998)
         {
-            isValid = false;
-            message.append("Item's amount are invalid. ");
+            addValidationError("amount", "Item's amount is invalid. ");
         }
 
-        if (stamp == null || stamp.isEmpty())
+        if (StringUtils.isBlank(stamp))
         {
-            isValid = false;
-            message.append("Item's stamp can't be null. ");
+            addValidationError("stamp", "Item's stamp can't be null or empty.");
+        } else if (stamp.length() > 200) {
+            addValidationError("stamp","Item's stamp is more than 200 characters. ");
         }
 
-        if (stamp != null && stamp.length() > 200) {
-            isValid = false;
-            message.append("Item's stamp is more than 200 characters. ");
-        }
-
-        if (refundStamp != null && refundStamp.length() > 200) {
-            isValid = false;
-            message.append("Item's refundStamp is more than 200 characters. ");
+        if (Objects.nonNull(refundStamp) && refundStamp.length() > 200) {
+            addValidationError("refundStamp", "Item's refund stamp is more than 200 characters. ");
         }
 
         if (commission != null)
         {
             ValidationResult itemValidationResult = commission.validate();
-
             if (!itemValidationResult.isValid()) {
-                isValid = false;
-                message.append(itemValidationResult.getMessage());
+                addValidationError("commission", itemValidationResult.getMessagesAsJson());
             }
         }
-
-        return new ValidationResult(isValid, message);
     }
 }

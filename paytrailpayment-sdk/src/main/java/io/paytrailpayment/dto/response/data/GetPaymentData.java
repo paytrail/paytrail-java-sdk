@@ -24,7 +24,7 @@ public class GetPaymentData {
     private int amount;
 
     /**
-     * Currency
+     * PaytrailCurrency
      */
     private String currency;
 
