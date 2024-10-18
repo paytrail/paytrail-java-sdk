@@ -2,16 +2,9 @@ package io.paytrailpayment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.paytrailpayment.dto.request.CreatePaymentRequest;
-import io.paytrailpayment.dto.request.CreateRefundRequest;
-import io.paytrailpayment.dto.request.ValidationResult;
-import io.paytrailpayment.dto.response.CreatePaymentResponse;
-import io.paytrailpayment.dto.response.CreateRefundResponse;
-import io.paytrailpayment.dto.response.GetPaymentResponse;
-import io.paytrailpayment.dto.response.data.CreateRefundData;
-import io.paytrailpayment.dto.response.data.DataResponse;
-import io.paytrailpayment.dto.response.data.CreatePaymentData;
-import io.paytrailpayment.dto.response.data.GetPaymentData;
+import io.paytrailpayment.dto.request.*;
+import io.paytrailpayment.dto.response.*;
+import io.paytrailpayment.dto.response.data.*;
 import io.paytrailpayment.exception.PaytrailClientException;
 import io.paytrailpayment.exception.PaytrailCommunicationException;
 import io.paytrailpayment.utilites.Constants;
@@ -171,6 +164,94 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             throw new PaytrailClientException(ResponseMessage.RESPONSE_ERROR.getCode(), e.getMessage(), e);
         }
     }
+    @Override
+    public AddCardFormResponse createAddCardFormRequest(AddCardFormRequest req) {
+        try {
+            ValidationResult validationResult = validateAddCardFormRequest(req);
+            if (!validationResult.isValid()) {
+                AddCardFormResponse response = new AddCardFormResponse();
+                response.setReturnCode(ResponseMessage.BAD_REQUEST.getCode());
+                response.setReturnMessage(validationResult.getMessagesAsJson());
+                return response;
+            }
+            return executeCreateAddCardForm(req);
+        } catch (PaytrailClientException | PaytrailCommunicationException e) {
+            return new AddCardFormResponse(e.getErrorCode(), e.getMessage(), null);
+        }
+    }
 
+    private ValidationResult validateAddCardFormRequest(AddCardFormRequest req) {
+        if (req == null) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", ResponseMessage.BAD_REQUEST.getDescription());
+            return new ValidationResult(false, error);
+        }
+        return req.validate();
+    }
+
+    private AddCardFormResponse executeCreateAddCardForm(AddCardFormRequest req) throws PaytrailCommunicationException, PaytrailClientException {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonRequest = mapper.writeValueAsString(req);
+            String targetURL = Constants.API_ENDPOINT + "/tokenization/addcard-form";
+            DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, jsonRequest, null, null);
+
+            if (data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
+                return new AddCardFormResponse(data.getStatusCode(), data.getData(), null);
+            } else {
+                // Successfully created the add card form and parse the result
+                AddCardFormData dataMapper = mapper.readValue(data.getData(), AddCardFormData.class);
+                return new AddCardFormResponse(data.getStatusCode(), ResponseMessage.OK.getDescription(), dataMapper);
+            }
+        } catch (JsonProcessingException e) {
+            throw new PaytrailClientException(ResponseMessage.RESPONSE_ERROR.getCode(), e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public CreateMitOrCitPaymentResponse createMitPaymentCharge(CreateMitOrCitPaymentRequest req) {
+        CreateMitOrCitPaymentResponse res = new CreateMitOrCitPaymentResponse();
+        try {
+            ValidationResult validationResult = validateCreateMitOrCitPaymentRequest(req);
+            if (!validationResult.isValid()) {
+                res.setReturnCode(ResponseMessage.BAD_REQUEST.getCode());
+                res.setReturnMessage(validationResult.getMessagesAsJson());
+                return res;
+            }
+            return executeCreateMitPaymentCharge(req);
+        } catch (PaytrailClientException | PaytrailCommunicationException e) {
+            res.setReturnCode(ResponseMessage.EXCEPTION.getCode());
+            res.setReturnMessage(e.getMessage());
+            return res;
+        }
+    }
+
+    private ValidationResult validateCreateMitOrCitPaymentRequest(CreateMitOrCitPaymentRequest req) {
+        if (req == null) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", ResponseMessage.BAD_REQUEST.getDescription());
+            return new ValidationResult(false, error);
+        }
+        return req.validate();
+    }
+
+    private CreateMitOrCitPaymentResponse executeCreateMitPaymentCharge(CreateMitOrCitPaymentRequest req) throws PaytrailClientException, PaytrailCommunicationException {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonRequest = mapper.writeValueAsString(req);
+            String targetURL = Constants.API_ENDPOINT + "/payments/token/mit/charge";
+
+            DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, jsonRequest, null, null);
+
+            if (data.getStatusCode() != ResponseMessage.OK.getCode()) {
+                return new CreateMitOrCitPaymentResponse(data.getStatusCode(), data.getData(), null);
+            } else {
+                CreateMitPaymentChargeData dataMapper = mapper.readValue(data.getData(), CreateMitPaymentChargeData.class);
+                return new CreateMitOrCitPaymentResponse(ResponseMessage.OK.getCode(), ResponseMessage.OK.getDescription(), dataMapper);
+            }
+        } catch (JsonProcessingException e) {
+            throw new PaytrailClientException(ResponseMessage.RESPONSE_ERROR.getCode(), e.getMessage(), e);
+        }
+    }
 
 }

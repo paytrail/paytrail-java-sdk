@@ -1,10 +1,10 @@
 package io.paytrailpayment;
 
+import io.paytrailpayment.dto.request.AddCardFormRequest;
+import io.paytrailpayment.dto.request.CreateMitOrCitPaymentRequest;
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
 import io.paytrailpayment.dto.request.CreateRefundRequest;
-import io.paytrailpayment.dto.response.CreatePaymentResponse;
-import io.paytrailpayment.dto.response.CreateRefundResponse;
-import io.paytrailpayment.dto.response.GetPaymentResponse;
+import io.paytrailpayment.dto.response.*;
 
 /**
  * Defines methods for interacting with the Paytrail payment system.
@@ -39,4 +39,8 @@ public interface IPaytrail {
      * @see <a href="https://docs.paytrail.com/#/?id=refund">Paytrail Documentation - Create Refund Request</a>
      */
     CreateRefundResponse createRefundRequest(CreateRefundRequest refundRequest, String transactionId);
+
+    AddCardFormResponse createAddCardFormRequest(AddCardFormRequest req);
+
+    CreateMitOrCitPaymentResponse createMitPaymentCharge(CreateMitOrCitPaymentRequest req);
 }
