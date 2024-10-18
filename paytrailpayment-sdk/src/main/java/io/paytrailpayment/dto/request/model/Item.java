@@ -44,10 +44,10 @@ public class Item extends Request {
      */
     private String category;
 
-    /**
-     * Item level order ID (suborder ID). Mainly useful for Shop-in-Shop purchases.
-     */
-    private String orderId;
+//    /**
+//     * Item level order ID (suborder ID). Mainly useful for Shop-in-Shop purchases.
+//     */
+//    private String orderId;
 
     /**
      * Unique identifier for this item. Required for Shop-in-Shop payments. Required for item refunds.
@@ -59,15 +59,15 @@ public class Item extends Request {
      */
     private String reference;
 
-    /**
-     * Merchant ID for the item. Required for Shop-in-Shop payments, do not use for normal payments.
-     */
-    private String merchant;
-
-    /**
-     * Shop-in-Shop commission. Do not use for normal payments.
-     */
-    private Commission commission;
+//    /**
+//     * Merchant ID for the item. Required for Shop-in-Shop payments, do not use for normal payments.
+//     */
+//    private String merchant;
+//
+//    /**
+//     * Shop-in-Shop commission. Do not use for normal payments.
+//     */
+//    private Commission commission;
 
     @Override()
     protected void specificValidate() {
@@ -103,6 +103,14 @@ public class Item extends Request {
             addValidationError("description", "Item's description is more than 1000 characters.");
         }
 
+    }
+    public Item(int unitPrice, int units, int vatPercentage, String productCode, String category, String description) {
+        this.unitPrice = unitPrice;
+        this.units = units;
+        this.vatPercentage = vatPercentage;
+        this.productCode = productCode;
+        this.category = category;
+        this.description = description;
     }
 }
 

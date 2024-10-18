@@ -1,4 +1,5 @@
-import io.paytrailpayment.PaytrailClient;
+package io.paytrailpayment;
+
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
 import io.paytrailpayment.dto.request.CreateRefundRequest;
 import io.paytrailpayment.dto.request.model.*;
