@@ -1,9 +1,6 @@
 package io.paytrailpayment;
 
-import io.paytrailpayment.dto.request.AddCardFormRequest;
-import io.paytrailpayment.dto.request.CreateMitOrCitPaymentRequest;
-import io.paytrailpayment.dto.request.CreatePaymentRequest;
-import io.paytrailpayment.dto.request.CreateRefundRequest;
+import io.paytrailpayment.dto.request.*;
 import io.paytrailpayment.dto.response.*;
 
 /**
@@ -27,6 +24,7 @@ public interface IPaytrail {
      *    Note! The transaction id needs to be sent on checkout-transaction-id header as well.
      *
      * @param transactionId The unique identifier for the transaction.
+     * @return GetPaymentResponse
      * @see <a href="https://docs.paytrail.com/#/?id=get">Paytrail Documentation - Get Payment</a>
      */
     GetPaymentResponse getPaymentInfo(String transactionId);
@@ -36,11 +34,32 @@ public interface IPaytrail {
      *
      * @param refundRequest   The request object containing refund details.
      * @param transactionId   The unique identifier for the transaction to refund.
+     * @return CreateRefundResponse
      * @see <a href="https://docs.paytrail.com/#/?id=refund">Paytrail Documentation - Create Refund Request</a>
      */
     CreateRefundResponse createRefundRequest(CreateRefundRequest refundRequest, String transactionId);
 
+    /**
+     * HTTP POST /tokenization/addcard-form add card form.
+     *
+     * @param req   The request object containing add card request
+     * @return AddCardFormResponse
+     * @see <a href="https://docs.paytrail.com/#/?id=add-card-form">Paytrail Documentation - Create Refund Request</a>
+     */
     AddCardFormResponse createAddCardFormRequest(AddCardFormRequest req);
 
+    /**
+     * HTTP POST /payments/token/mit/charge creates a new MIT payment charge.
+     * @param req
+     * @return CreateMitPaymentChargeResponse
+     * @see <a href="https://docs.paytrail.com/#/?id=create-authorization-hold-or-charge">Paytrail Documentation  - Create authorization hold or charge
+     */
     CreateMitOrCitPaymentResponse createMitPaymentCharge(CreateMitOrCitPaymentRequest req);
+
+    CreateMitOrCitPaymentResponse createMitPaymentAuthorizationHold(CreateMitOrCitPaymentRequest createMitPaymentAuthorizationHold);
+    CreateMitOrCitPaymentResponse createMitPaymentCommit(CreateMitOrCitPaymentRequest req, String transactionId);
+    CreateMitOrCitPaymentResponse createCitPaymentCharge(CreateMitOrCitPaymentRequest req);
+    CreateMitOrCitPaymentResponse createCitPaymentAuthorizationHold(CreateMitOrCitPaymentRequest req);
+    CreateMitOrCitPaymentResponse createCitPaymentCommit(CreateMitOrCitPaymentRequest req, String transactionId);
+    PayAddCardResponse payAndAddCard(PayAddCardRequest req);
 }
