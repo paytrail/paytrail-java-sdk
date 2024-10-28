@@ -1,17 +1,11 @@
 package io.paytrailpayment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.paytrailpayment.dto.request.CreatePaymentRequest;
-import io.paytrailpayment.dto.request.CreateRefundRequest;
-import io.paytrailpayment.dto.request.ValidationResult;
-import io.paytrailpayment.dto.response.CreatePaymentResponse;
-import io.paytrailpayment.dto.response.CreateRefundResponse;
-import io.paytrailpayment.dto.response.GetPaymentResponse;
-import io.paytrailpayment.dto.response.data.CreateRefundData;
-import io.paytrailpayment.dto.response.data.DataResponse;
-import io.paytrailpayment.dto.response.data.CreatePaymentData;
-import io.paytrailpayment.dto.response.data.GetPaymentData;
+import io.paytrailpayment.dto.request.*;
+import io.paytrailpayment.dto.response.*;
+import io.paytrailpayment.dto.response.data.*;
 import io.paytrailpayment.exception.PaytrailClientException;
 import io.paytrailpayment.exception.PaytrailCommunicationException;
 import io.paytrailpayment.utilites.Constants;
@@ -20,9 +14,8 @@ import lombok.*;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import static io.paytrailpayment.utilites.Constants.GET_METHOD;
 
 @NoArgsConstructor
 @Getter
@@ -172,5 +165,107 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
         }
     }
 
+    private ValidationResult validateGetPaymentProvidersRequest(GetPaymentProvidersRequest req) {
+        if (req == null) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", ResponseMessage.BAD_REQUEST.getDescription());
+            return new ValidationResult(false, error);
+        }
+        return req.validate();
+    }
 
+    private GetPaymentProvidersResponse executeGetPaymentProviders(GetPaymentProvidersRequest req) throws PaytrailCommunicationException, PaytrailClientException {
+        ObjectMapper mapper = new ObjectMapper();
+        GetPaymentProvidersResponse res = new GetPaymentProvidersResponse();
+        try {
+            // Create new request
+            String url = Constants.API_ENDPOINT + "/merchants/payment-providers?" + req.toString();
+            DataResponse data = this.handleRequest(Constants.GET_METHOD, url, null, null, null);
+
+            if (data.getStatusCode() != ResponseMessage.OK.getCode()) {
+                res.setReturnCode(data.getStatusCode());
+                res.setReturnMessage(data.getData());
+            } else {
+                List<GetPaymentProvidersData> dataMapper = mapper.readValue(data.getData(), new TypeReference<List<GetPaymentProvidersData>>() {});
+                res.setReturnCode(data.getStatusCode());
+                res.setReturnMessage(ResponseMessage.OK.getDescription());
+                res.setData(dataMapper);
+            }
+            return res;
+        } catch (JsonProcessingException e) {
+            throw new PaytrailClientException(ResponseMessage.RESPONSE_ERROR.getCode(), e.getMessage(), e);
+        }
+    }
+
+    public GetPaymentProvidersResponse getPaymentProviders(GetPaymentProvidersRequest req) {
+        try {
+            ValidationResult validationResult = validateGetPaymentProvidersRequest(req);
+            if (!validationResult.isValid()) {
+                GetPaymentProvidersResponse response = new GetPaymentProvidersResponse();
+                response.setReturnCode(ResponseMessage.BAD_REQUEST.getCode());
+                response.setReturnMessage(validationResult.getMessagesAsJson());
+                return response;
+            }
+            return executeGetPaymentProviders(req);
+        } catch (PaytrailClientException | PaytrailCommunicationException e) {
+            GetPaymentProvidersResponse response = new GetPaymentProvidersResponse();
+            response.setReturnCode(e.getErrorCode());
+            response.setReturnMessage(e.getMessage());
+            return response;
+        }
+    }
+
+    private boolean validateGetGroupedPaymentProviders(GetGroupedPaymentProvidersResponse res, GetGroupedPaymentProvidersRequest req) {
+        if (req == null) {
+            res.setReturnCode(ResponseMessage.RESPONSE_NULL.getCode());
+            res.setReturnMessage("Get payment grouped providers request cannot be null");
+            return false;
+        }
+
+        ValidationResult validationResult = req.validate();
+        if (!validationResult.isValid()) {
+            res.setReturnCode(ResponseMessage.VALIDATION_FAILED.getCode());
+            res.setReturnMessage(validationResult.getMessagesAsJson());
+            return false;
+        }
+
+        return true;
+    }
+
+    private GetGroupedPaymentProvidersResponse executeGetGroupedPaymentProviders(GetGroupedPaymentProvidersRequest req) throws PaytrailCommunicationException, PaytrailClientException {
+        ObjectMapper mapper = new ObjectMapper();
+        GetGroupedPaymentProvidersResponse res = new GetGroupedPaymentProvidersResponse();
+        try {
+            // Create new request
+            String url = Constants.API_ENDPOINT + "/merchants/grouped-payment-providers?" + req.toString();
+            DataResponse data = this.handleRequest(Constants.GET_METHOD, url, null, null, null);
+
+            if (data.getStatusCode() != ResponseMessage.OK.getCode()) {
+                res.setReturnCode(data.getStatusCode());
+                res.setReturnMessage(data.getData());
+            } else {
+                GetGroupedPaymentProvidersData dataMapper = mapper.readValue(data.getData(), GetGroupedPaymentProvidersData.class);
+                res.setReturnCode(data.getStatusCode());
+                res.setReturnMessage(ResponseMessage.OK.getDescription());
+                res.setData(dataMapper);
+            }
+            return res;
+        } catch (JsonProcessingException e) {
+            throw new PaytrailClientException(ResponseMessage.RESPONSE_ERROR.getCode(), e.getMessage(), e);
+        }
+    }
+
+    public GetGroupedPaymentProvidersResponse getGroupedPaymentProviders(GetGroupedPaymentProvidersRequest req) {
+        GetGroupedPaymentProvidersResponse res = new GetGroupedPaymentProvidersResponse();
+        try {
+            if (!validateGetGroupedPaymentProviders(res, req)) {
+                return res;
+            }
+            return executeGetGroupedPaymentProviders(req);
+        } catch (PaytrailClientException | PaytrailCommunicationException e) {
+            res.setReturnCode(ResponseMessage.EXCEPTION.getCode());
+            res.setReturnMessage(e.getMessage());
+            return res;
+        }
+    }
 }
