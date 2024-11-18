@@ -1,7 +1,6 @@
 package io.paytrailpayment;
 
 import io.paytrailpayment.dto.request.GetPaymentProvidersRequest;
-import io.paytrailpayment.dto.request.ValidationResult;
 import io.paytrailpayment.dto.request.model.PaytrailPaymentMethodGroup;
 import io.paytrailpayment.dto.response.GetPaymentProvidersResponse;
 import io.paytrailpayment.dto.response.data.DataResponse;
@@ -57,7 +56,7 @@ public class PaytrailClientGetPaymentProviderTests {
 
         GetPaymentProvidersRequest request = new GetPaymentProvidersRequest();
         request.setAmount(100);
-        request.setGroups(Collections.singletonList(PaytrailPaymentMethodGroup.CREDITCARD));
+        request.setGroups(Collections.singletonList(PaytrailPaymentMethodGroup.creditcard));
 
         // Act
         GetPaymentProvidersResponse res = payTrail.getPaymentProviders(request);
@@ -74,7 +73,7 @@ public class PaytrailClientGetPaymentProviderTests {
         PaytrailClient payTrail = new PaytrailClient(MERCHANTIDN, SECRETKEYSIS, "test");
         GetPaymentProvidersRequest request = new GetPaymentProvidersRequest();
         request.setAmount(100);
-        request.setGroups(Collections.singletonList(PaytrailPaymentMethodGroup.CREDITCARD));
+        request.setGroups(Collections.singletonList(PaytrailPaymentMethodGroup.creditcard));
 
         // Mock the handleRequest method to return a failed response
         PaytrailClient spyPayTrail = Mockito.spy(payTrail);
