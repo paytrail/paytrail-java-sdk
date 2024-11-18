@@ -7,6 +7,7 @@ import io.paytrailpayment.utilites.ResponseMessage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -60,7 +61,7 @@ public class PayAndAddCardTests {
         request.setLanguage(PaytrailLanguage.FI);
         request.setOrderId("");
         request.setItems(Arrays.asList(new Item(
-                1590, 1, 24, "#927502759", "Pet supplies", "Cat ladder")));
+                1590, 1, BigDecimal.valueOf(24), "#927502759", "Pet supplies", "Cat ladder")));
         request.setCustomer(new Customer(
                 "erja.esimerkki@example.org", "Erja", "FI12345671", "nothing",
                 "+358501234567", "123"));
@@ -68,7 +69,7 @@ public class PayAndAddCardTests {
         request.setCallbackUrls(new CallbackUrl("https://ecom.example.org/success", "https://ecom.example.org/cancel"));
         request.setDeliveryAddress(new Address("Tampere", "FI", "Pirkanmaa", "33100", "Hämeenkatu 6 B"));
         request.setInvoicingAddress(new Address("Helsinki", "FI", "Uusimaa", "00510", "Testikatu 1"));
-        request.setGroups(Arrays.asList(PaytrailPaymentMethodGroup.MOBILE.toString()));
+        request.setGroups(Arrays.asList(PaytrailPaymentMethodGroup.mobile.toString()));
 
         PayAddCardResponse res = payTrail.payAndAddCard(request);
         int actual = res.getReturnCode();
@@ -92,7 +93,7 @@ public class PayAndAddCardTests {
         request.setLanguage(PaytrailLanguage.FI);
         request.setOrderId("");
         request.setItems(Arrays.asList(new Item(
-                1590, 1, 24, "#927502759", "Pet supplies", "Cat ladder")));
+                1590, 1, BigDecimal.valueOf(24), "#927502759", "Pet supplies", "Cat ladder")));
         request.setCustomer(new Customer(
                 "erja.esimerkki@example.org", "Erja", "FI12345671", "nothing",
                 "+358501234567", "123"));
@@ -100,7 +101,7 @@ public class PayAndAddCardTests {
         request.setCallbackUrls(new CallbackUrl("https://ecom.example.org/success", "https://ecom.example.org/cancel"));
         request.setDeliveryAddress(new Address("Tampere", "FI", "Pirkanmaa", "33100", "Hämeenkatu 6 B"));
         request.setInvoicingAddress(new Address("Helsinki", "FI", "Uusimaa", "00510", "Testikatu 1"));
-        request.setGroups(Arrays.asList(PaytrailPaymentMethodGroup.MOBILE.toString()));
+        request.setGroups(Arrays.asList(PaytrailPaymentMethodGroup.mobile.toString()));
 
         PayAddCardResponse res = payTrail.payAndAddCard(request);
         int actual = res.getReturnCode();
@@ -133,7 +134,7 @@ public class PayAndAddCardTests {
         request.setCallbackUrls(new CallbackUrl("https://ecom.example.org/success", "https://ecom.example.org/cancel"));
         request.setDeliveryAddress(new Address("Tampere", "FI", "Pirkanmaa", "33100", "Hämeenkatu 6 B"));
         request.setInvoicingAddress(new Address("Helsinki", "FI", "Uusimaa", "00510", "Testikatu 1"));
-        request.setGroups(Arrays.asList(PaytrailPaymentMethodGroup.MOBILE.toString()));
+        request.setGroups(Arrays.asList(PaytrailPaymentMethodGroup.mobile.toString()));
 
         PayAddCardResponse res = payTrail.payAndAddCard(request);
         int actual = res.getReturnCode();
@@ -157,7 +158,7 @@ public class PayAndAddCardTests {
         request.setLanguage(PaytrailLanguage.FI);
         request.setOrderId("");
         request.setItems(Arrays.asList(new Item(
-                1590, 1, 24, "#927502759", "Pet supplies", "Cat ladder")));
+                1590, 1, BigDecimal.valueOf(24), "#927502759", "Pet supplies", "Cat ladder")));
         request.setCustomer(new Customer(
                 "erja.esimerkki@example.org", "Erja", "FI12345671", "nothing",
                 "+358501234567", "123"));
@@ -165,7 +166,7 @@ public class PayAndAddCardTests {
         request.setCallbackUrls(new CallbackUrl("https://ecom.example.org/success", "https://ecom.example.org/cancel"));
         request.setDeliveryAddress(new Address("Tampere", "FI", "Pirkanmaa", "33100", "Hämeenkatu 6 B"));
         request.setInvoicingAddress(new Address("Helsinki", "FI", "Uusimaa", "00510", "Testikatu 1"));
-        request.setGroups(Arrays.asList(PaytrailPaymentMethodGroup.MOBILE.toString()));
+        request.setGroups(Arrays.asList(PaytrailPaymentMethodGroup.mobile.toString()));
 
         PayAddCardResponse res = payTrail.payAndAddCard(request);
         int actual = res.getReturnCode();

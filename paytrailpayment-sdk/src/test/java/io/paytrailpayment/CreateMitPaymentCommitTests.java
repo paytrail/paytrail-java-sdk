@@ -6,6 +6,7 @@ import io.paytrailpayment.dto.response.CreateMitOrCitPaymentResponse;
 import io.paytrailpayment.utilites.ResponseMessage;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -89,7 +90,7 @@ public class CreateMitPaymentCommitTests {
         ShopInShopItem item = new ShopInShopItem();
         item.setUnitPrice(1590);
         item.setUnits(1);
-        item.setVatPercentage(24);
+        item.setVatPercentage(BigDecimal.valueOf(24));
         item.setProductCode("#927502759");
         item.setCategory("Pet supplies");
         item.setDescription("Cat ladder");
@@ -132,7 +133,7 @@ public class CreateMitPaymentCommitTests {
         invoicingAddress.setStreetAddress("Testikatu 1");
         payload.setInvoicingAddress(invoicingAddress);
 
-        payload.setGroups(Arrays.asList(PaytrailPaymentMethodGroup.MOBILE.toString()));
+        payload.setGroups(Arrays.asList(PaytrailPaymentMethodGroup.mobile.toString()));
 
         return payload;
     }

@@ -104,7 +104,7 @@ public class Item extends Request {
         }
 
     }
-    public Item(int unitPrice, int units, int vatPercentage, String productCode, String category, String description) {
+    public Item(int unitPrice, int units, BigDecimal vatPercentage, String productCode, String category, String description) {
         this.unitPrice = unitPrice;
         this.units = units;
         this.vatPercentage = vatPercentage;

@@ -1,7 +1,10 @@
+package io.paytrailpayment;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.paytrailpayment.PaytrailClient;
+import io.paytrailpayment.TestCase;
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
 import io.paytrailpayment.dto.request.model.*;
 import io.paytrailpayment.dto.request.model.PaytrailCurrency;
