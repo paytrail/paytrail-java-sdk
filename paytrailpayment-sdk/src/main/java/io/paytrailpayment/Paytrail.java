@@ -65,19 +65,26 @@ public abstract class Paytrail {
     }
 
     protected DataResponse handleRequest(String method, String url, String body, String transactionId, String checkoutTokenizationId) throws PaytrailClientException, PaytrailCommunicationException{
+        return handleRequest(method, url, body, transactionId, checkoutTokenizationId, false);
+    }
+
+    protected DataResponse handleRequest(String method, String url, String body, String transactionId, String checkoutTokenizationId, boolean skipAuthHeaders) throws PaytrailClientException, PaytrailCommunicationException{
         DataResponse res = new DataResponse();
         try {
             Map<String, String> hdparams = getHeaders(method, transactionId, checkoutTokenizationId);
 
-            String signature = calculateHmac(hdparams, body);
+            if (!skipAuthHeaders) {
 
-            if (signature.isEmpty()) {
-                res.setStatusCode(ResponseMessage.BAD_REQUEST.getCode());
-                res.setData(ResponseMessage.BAD_REQUEST.getDescription());
-                return res;
+                String signature = calculateHmac(hdparams, body);
+
+                if (signature.isEmpty()) {
+                    res.setStatusCode(ResponseMessage.BAD_REQUEST.getCode());
+                    res.setData(ResponseMessage.BAD_REQUEST.getDescription());
+                    return res;
+                }
+
+                hdparams = getHeaders(hdparams, Constants.SIGNATURE_HEADER, signature);
             }
-
-            hdparams = getHeaders(hdparams, Constants.SIGNATURE_HEADER, signature);
 
             // Create new request
             HttpClient httpClient = HttpClientBuilder.create().build();

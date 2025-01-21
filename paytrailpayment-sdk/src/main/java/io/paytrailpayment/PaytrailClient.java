@@ -192,7 +192,8 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             ObjectMapper mapper = new ObjectMapper();
             String jsonRequest = mapper.writeValueAsString(req);
             String targetURL = Constants.API_ENDPOINT + "/tokenization/addcard-form";
-            DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, jsonRequest, null, null);
+            // Send request without signature in header.
+            DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, jsonRequest, null, null, true);
 
             if (data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
                 return new AddCardFormResponse(data.getStatusCode(), data.getData(), null);

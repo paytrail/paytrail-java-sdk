@@ -125,7 +125,7 @@ public class PayAndAddCardTests {
         request.setLanguage(PaytrailLanguage.FI);
         request.setOrderId("");
         request.setItems(Arrays.asList(new ShopInShopItem(
-                1590, 1, 24, "#927502759", "Pet supplies", "Cat ladder",
+                1590, 1, BigDecimal.valueOf(24), "#927502759", "Pet supplies", "Cat ladder",
                 MERCHANTIDSISS, UUID.randomUUID().toString(), "", "")));
         request.setCustomer(new Customer(
                 "erja.esimerkki@example.org", "Erja", "FI12345671", "nothing",

@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
@@ -28,18 +30,18 @@ public class ShopInShopItem extends Item {
      */
     private Commission commission;
 
-    public ShopInShopItem(int unitPrice, int units, int vatPercentage, String productCode, String category, String description, String stamp, String reference, String orderId, String merchant, Commission commission) {
+    public ShopInShopItem(int unitPrice, int units, BigDecimal vatPercentage, String productCode, String category, String description, String stamp, String reference, String orderId, String merchant, Commission commission) {
         super(unitPrice, units, vatPercentage, productCode, description, category, stamp, reference);
         this.orderId = orderId;
         this.merchant = merchant;
         this.commission = commission;
     }
 
-    public ShopInShopItem(int unitPrice, int units, int vatPercentage, String productCode, String category, String description, String stamp, String reference) {
+    public ShopInShopItem(int unitPrice, int units, BigDecimal vatPercentage, String productCode, String category, String description, String stamp, String reference) {
         super(unitPrice, units, vatPercentage, productCode, description, category, stamp, reference);
     }
 
-    public ShopInShopItem(int unitPrice, int units, int vatPercentage, String productCode, String category,
+    public ShopInShopItem(int unitPrice, int units, BigDecimal vatPercentage, String productCode, String category,
                           String description, String merchant, String stamp, String reference, String orderId) {
         super(unitPrice, units, vatPercentage, productCode, description, category, stamp, reference);
         this.merchant = merchant;

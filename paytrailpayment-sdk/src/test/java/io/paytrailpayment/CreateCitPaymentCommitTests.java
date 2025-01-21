@@ -7,6 +7,7 @@ import io.paytrailpayment.utilites.ResponseMessage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -61,7 +62,7 @@ public class CreateCitPaymentCommitTests {
         payload.setLanguage(PaytrailLanguage.FI);
         payload.setOrderId("");
         payload.setItems(Arrays.asList(new ShopInShopItem(
-                1590, 1, 24, "#927502759", "Pet supplies", "Cat ladder",
+                1590, 1, BigDecimal.valueOf(24), "#927502759", "Pet supplies", "Cat ladder",
                 UUID.randomUUID().toString(), "9187445")));
         payload.setCustomer(new Customer(
                 "erja.esimerkki@example.org", "Erja", "FI12345671", "nothing",
@@ -95,7 +96,7 @@ public class CreateCitPaymentCommitTests {
         payload.setLanguage(PaytrailLanguage.FI);
         payload.setOrderId("");
         payload.setItems(Arrays.asList(new ShopInShopItem(
-                1590, 1, 24, "#927502759", "Pet supplies", "Cat ladder",
+                1590, 1, BigDecimal.valueOf(24), "#927502759", "Pet supplies", "Cat ladder",
                 UUID.randomUUID().toString(), "9187445")));
         payload.setCustomer(new Customer(
                 "erja.esimerkki@example.org", "Erja", "FI12345671", "nothing",
