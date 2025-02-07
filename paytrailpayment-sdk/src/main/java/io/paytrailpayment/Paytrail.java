@@ -71,10 +71,10 @@ public abstract class Paytrail {
     protected DataResponse handleRequest(String method, String url, String body, String transactionId, String checkoutTokenizationId, boolean skipAuthHeaders) throws PaytrailClientException, PaytrailCommunicationException{
         DataResponse res = new DataResponse();
         try {
-            Map<String, String> hdparams = getHeaders(method, transactionId, checkoutTokenizationId);
+            Map<String, String> hdparams = null;
 
             if (!skipAuthHeaders) {
-
+                hdparams = getHeaders(method, transactionId, checkoutTokenizationId);
                 String signature = calculateHmac(hdparams, body);
 
                 if (signature.isEmpty()) {
@@ -98,12 +98,16 @@ public abstract class Paytrail {
                         .setText(body);
                 httpPost.setEntity(builder.build());
 
-                for (Map.Entry<String, String> entry : hdparams.entrySet()) {
-                    httpPost.setHeader(entry.getKey(), entry.getValue());
+                if (Objects.nonNull(hdparams)) {
+                    for (Map.Entry<String, String> entry : hdparams.entrySet()) {
+                        httpPost.setHeader(entry.getKey(), entry.getValue());
+                    }
                 }
             } else if (Objects.equals(method, Constants.GET_METHOD)) {
-                for (Map.Entry<String, String> entry : hdparams.entrySet()) {
-                    httpGet.setHeader(entry.getKey(), entry.getValue());
+                if (Objects.nonNull(hdparams)) {
+                    for (Map.Entry<String, String> entry : hdparams.entrySet()) {
+                        httpGet.setHeader(entry.getKey(), entry.getValue());
+                    }
                 }
             }
 
