@@ -104,4 +104,12 @@ public interface IPaytrail {
      * @return
      */
     PayAddCardResponse payAndAddCard(PayAddCardRequest req);
+
+  /**
+   *
+   * HTTP POST /tokenization/get-token get token.
+   * @param req
+   * @return the actual card token which can then be used to make payments on the card
+   */
+  GetTokenResponse createGetTokenRequest(GetTokenRequest req);
 }

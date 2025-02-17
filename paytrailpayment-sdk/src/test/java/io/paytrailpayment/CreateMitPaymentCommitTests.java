@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CreateMitPaymentCommitTests {
     private static final String MERCHANTIDN = "375917";
     private static final String MERCHANTIDSIS = "695861";
-    private static final String SECRETKEYSIS = "SAIPPUAKAUPPIAS";
+    private static final String SECRETKEYSIS = "MONISAIPPUAKAUPPIAS";
 
     @Test
     public void createMitPaymentCommit_RequestNull_ReturnCode400() {
@@ -53,7 +53,7 @@ public class CreateMitPaymentCommitTests {
         int expected = ResponseMessage.OK.getCode();
 
         // Act
-        PaytrailClient payTrail = new PaytrailClient(MERCHANTIDN, SECRETKEYSIS, "test");
+        PaytrailClient payTrail = new PaytrailClient(MERCHANTIDSIS, SECRETKEYSIS, "test");
         CreateMitOrCitPaymentRequest payload = createValidPayload();
         CreateMitOrCitPaymentResponse res = payTrail.createMitPaymentCommit(payload, "0e056dd8-408f-11ee-9cb4-e3059a523029");
         int actual = res.getReturnCode();
@@ -96,6 +96,7 @@ public class CreateMitPaymentCommitTests {
         item.setDescription("Cat ladder");
         item.setStamp(UUID.randomUUID().toString());
         item.setReference("9187445");
+        item.setMerchant("695874");
         payload.setItems(Arrays.asList(item));
 
         Customer customer = new Customer();

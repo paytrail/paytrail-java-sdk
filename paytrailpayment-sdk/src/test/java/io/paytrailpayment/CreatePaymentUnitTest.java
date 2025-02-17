@@ -103,7 +103,7 @@ public class CreatePaymentUnitTest extends TestCase {
     }
 
     @Test()
-    public void createPaymentReturnStatusCode201() {
+    public void createPaymentReturnStatusCode200() {
         CreatePaymentRequest req = new CreatePaymentRequest();
 
         req.setStamp(UUID.randomUUID().toString());
@@ -145,8 +145,8 @@ public class CreatePaymentUnitTest extends TestCase {
         CreatePaymentResponse res = client.createPayment(req);
 
         assertNotNull(res);
-        assertEquals(ResponseMessage.CREATED.getCode(), res.getReturnCode());
-        assertEquals(ResponseMessage.CREATED.getDescription(), res.getReturnMessage());
+        assertEquals(ResponseMessage.OK.getCode(), res.getReturnCode());
+        assertEquals(ResponseMessage.OK.getDescription(), res.getReturnMessage());
         assertNotNull(res.getData());
     }
 
@@ -342,7 +342,4 @@ public class CreatePaymentUnitTest extends TestCase {
 
         assertNull(res.getData());
     }
-
-
-
 }

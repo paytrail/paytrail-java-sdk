@@ -133,9 +133,8 @@ public class CreateRefundRequestUnitTest extends TestCase {
     }
 
     @Test()
-    public void createRefundRequestReturnStatusCode201() {
+    public void createRefundRequestReturnStatusCode200() {
         CreateRefundRequest req = new CreateRefundRequest();
-
         req.setAmount(1590);
         req.setEmail("test@gmail.com");
         req.setRefundStamp(UUID.randomUUID().toString());
@@ -154,9 +153,7 @@ public class CreateRefundRequestUnitTest extends TestCase {
         callbackUrls.setSuccess("https://ecom.example.org/success");
         callbackUrls.setCancel("https://ecom.example.org/cancel");
         req.setCallbackUrls(callbackUrls);
-
         CreateRefundResponse res = client.createRefundRequest(req, transactionId);
-
         assertNotNull(res);
     }
 

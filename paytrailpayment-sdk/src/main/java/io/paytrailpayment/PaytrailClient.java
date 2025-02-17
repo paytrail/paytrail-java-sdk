@@ -2,6 +2,7 @@ package io.paytrailpayment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import io.paytrailpayment.dto.request.*;
 import io.paytrailpayment.dto.response.*;
 import io.paytrailpayment.dto.response.data.*;
@@ -57,12 +58,12 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             String targetURL = Constants.API_ENDPOINT + "/payments";
             DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, jsonRequest, null, null);
 
-            if (data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
+            if (data.getStatusCode() != ResponseMessage.CREATED.getCode() && data.getStatusCode() != ResponseMessage.OK.getCode()) {
                 return new CreatePaymentResponse(data.getStatusCode(), data.getData(), null);
             } else {
                 // Successfully created the payment and parse the result
                 CreatePaymentData dataMapper = mapper.readValue(data.getData(), CreatePaymentData.class);
-                return new CreatePaymentResponse(data.getStatusCode(), ResponseMessage.OK.getDescription(), dataMapper);
+                return new CreatePaymentResponse(ResponseMessage.OK.getCode(), ResponseMessage.OK.getDescription(), dataMapper);
             }
 
         } catch (JsonProcessingException e) {
@@ -148,12 +149,12 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             String targetURL = Constants.API_ENDPOINT + "/payments/" + transactionId + "/refund";
             DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, jsonRequest, transactionId, null);
 
-            if (data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
+            if (data.getStatusCode() != ResponseMessage.CREATED.getCode() && data.getStatusCode() != ResponseMessage.OK.getCode()) {
                 res.setReturnCode(data.getStatusCode());
                 res.setReturnMessage(data.getData());
             } else {
                 CreateRefundData dataMapper = mapper.readValue(data.getData(), CreateRefundData.class);
-                res.setReturnCode(data.getStatusCode());
+                res.setReturnCode(ResponseMessage.OK.getCode());
                 res.setReturnMessage(ResponseMessage.OK.getDescription());
                 res.setData(dataMapper);
             }
@@ -242,7 +243,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
 
             DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, jsonRequest, null, null);
 
-            if (data.getStatusCode() != ResponseMessage.OK.getCode()) {
+            if (data.getStatusCode() != ResponseMessage.OK.getCode() && data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
                 return new CreateMitOrCitPaymentResponse(data.getStatusCode(), data.getData(), null);
             } else {
                 CreateMitPaymentChargeData dataMapper = mapper.readValue(data.getData(), CreateMitPaymentChargeData.class);
@@ -277,12 +278,12 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             String targetURL = Constants.API_ENDPOINT + "/payments/token/mit/authorization-hold";
             DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, jsonRequest, null, null);
 
-            if (data.getStatusCode() != ResponseMessage.OK.getCode()) {
+            if (data.getStatusCode() != ResponseMessage.OK.getCode() && data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
                 return new CreateMitOrCitPaymentResponse(data.getStatusCode(), data.getData(), null);
             } else {
                 // Successfully created the MIT payment authorization hold and parse the result
                 CreateMitPaymentChargeData dataMapper = mapper.readValue(data.getData(), CreateMitPaymentChargeData.class);
-                return new CreateMitOrCitPaymentResponse(data.getStatusCode(), ResponseMessage.OK.getDescription(), dataMapper);
+                return new CreateMitOrCitPaymentResponse(ResponseMessage.OK.getCode(), ResponseMessage.OK.getDescription(), dataMapper);
             }
         } catch (JsonProcessingException e) {
             throw new PaytrailClientException(ResponseMessage.RESPONSE_ERROR.getCode(), e.getMessage(), e);
@@ -318,7 +319,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
         try {
             ObjectMapper mapper = new ObjectMapper();
             String jsonRequest = mapper.writeValueAsString(req);
-            String targetURL = Constants.API_ENDPOINT + "/payments/" + transactionId + "token/mit/commit/";
+            String targetURL = Constants.API_ENDPOINT + "/payments/" + transactionId + "/token/commit/";
 
             DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, jsonRequest, transactionId, null);
 
@@ -359,7 +360,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
 
             DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, jsonRequest, null, null);
 
-            if (data.getStatusCode() != ResponseMessage.OK.getCode()) {
+            if (data.getStatusCode() != ResponseMessage.OK.getCode() && data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
                 return new CreateMitOrCitPaymentResponse(data.getStatusCode(), data.getData(), null);
             } else {
                 CreateMitPaymentChargeData dataMapper = mapper.readValue(data.getData(), CreateMitPaymentChargeData.class);
@@ -396,7 +397,7 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
 
             DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, jsonRequest, null, null);
 
-            if (data.getStatusCode() != ResponseMessage.OK.getCode()) {
+            if (data.getStatusCode() != ResponseMessage.OK.getCode() && data.getStatusCode() != ResponseMessage.CREATED.getCode()) {
                 return new CreateMitOrCitPaymentResponse(data.getStatusCode(), data.getData(), null);
             } else {
                 CreateMitPaymentChargeData dataMapper = mapper.readValue(data.getData(), CreateMitPaymentChargeData.class);
@@ -477,5 +478,58 @@ public class PaytrailClient extends Paytrail implements IPaytrail {
             throw new PaytrailClientException(ResponseMessage.RESPONSE_ERROR.getCode(), e.getMessage(), e);
         }
     }
+
+  @Override
+  public GetTokenResponse createGetTokenRequest(GetTokenRequest req) {
+    GetTokenResponse res = new GetTokenResponse();
+    try {
+      // Validate request before processing
+      ValidationResult validationResult = validateGetTokenRequest(req);
+      if (!validationResult.isValid()) {
+        res.setReturnCode(ResponseMessage.BAD_REQUEST.getCode());
+        res.setReturnMessage(validationResult.getMessagesAsJson());
+        return res;
+      }
+      return executeCreateGetTokenRequest(req);
+    } catch (PaytrailClientException | PaytrailCommunicationException e) {
+      res.setReturnCode(ResponseMessage.EXCEPTION.getCode());
+      res.setReturnMessage(e.getMessage());
+      return res;
+    }
+  }
+
+  private GetTokenResponse  executeCreateGetTokenRequest(GetTokenRequest req) throws PaytrailClientException, PaytrailCommunicationException {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      String jsonRequest = mapper.writeValueAsString(req);
+
+      // Construct the URL dynamically using checkoutTokenizationId from TokenRequest
+      String targetURL = Constants.API_ENDPOINT + "/tokenization/" + req.getCheckoutTokenizationId();
+
+      // Handle HTTP request
+      DataResponse data = this.handleRequest(Constants.POST_METHOD, targetURL, "{}", null, req.getCheckoutTokenizationId());
+
+      // Process API response
+      if (data.getStatusCode() != ResponseMessage.OK.getCode()) {
+        return new GetTokenResponse(data.getStatusCode(), data.getData(), null);
+      } else {
+        mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+        GetTokenData dataMapper = mapper.readValue(data.getData(), GetTokenData.class);
+        return new GetTokenResponse(ResponseMessage.OK.getCode(), ResponseMessage.OK.getDescription(), dataMapper);
+      }
+    } catch (JsonProcessingException e) {
+      throw new PaytrailClientException(ResponseMessage.RESPONSE_ERROR.getCode(), e.getMessage(), e);
+    }
+  }
+
+  private ValidationResult validateGetTokenRequest(GetTokenRequest req) {
+    if (req == null) {
+      Map<String, String> error = new HashMap<>();
+      error.put("error", ResponseMessage.BAD_REQUEST.getDescription());
+      return new ValidationResult(false, error);
+    }
+    return req.validate();
+  }
+
 
 }

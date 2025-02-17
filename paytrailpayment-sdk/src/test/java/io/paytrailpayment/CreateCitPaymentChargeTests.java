@@ -3,6 +3,7 @@ package io.paytrailpayment;
 import io.paytrailpayment.dto.request.*;
 import io.paytrailpayment.dto.request.model.*;
 import io.paytrailpayment.dto.response.CreateMitOrCitPaymentResponse;
+import io.paytrailpayment.dto.response.GetTokenResponse;
 import io.paytrailpayment.utilites.ResponseMessage;
 import org.junit.jupiter.api.Test;
 
@@ -13,9 +14,9 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CreateCitPaymentChargeTests {
-    private static final String MERCHANTIDN = "375917";
+    private static final String MERCHANTIDN = "695874";
     private static final String MERCHANTIDSIS = "695861";
-    private static final String SECRETKEYSIS = "SAIPPUAKAUPPIAS";
+    private static final String SECRETKEYSIS = "MONISAIPPUAKAUPPIAS";
 
     @Test
     public void createCitPaymentCharge_RequestNull_ReturnCode400() {
@@ -53,7 +54,7 @@ public class CreateCitPaymentChargeTests {
         int expected = ResponseMessage.OK.getCode();
 
         // Act
-        PaytrailClient payTrail = new PaytrailClient(MERCHANTIDN, SECRETKEYSIS, "test");
+        PaytrailClient payTrail = new PaytrailClient(MERCHANTIDSIS, SECRETKEYSIS, "test");
         CreateMitOrCitPaymentRequest payload = createValidPayload();
         CreateMitOrCitPaymentResponse res = payTrail.createCitPaymentCharge(payload);
         int actual = res.getReturnCode();
@@ -85,7 +86,7 @@ public class CreateCitPaymentChargeTests {
         payload.setAmount(1590);
         payload.setCurrency(PaytrailCurrency.EUR);
         payload.setLanguage(PaytrailLanguage.FI);
-        payload.setOrderId("");
+        payload.setOrderId("12335");
 
         ShopInShopItem item = new ShopInShopItem();
         item.setUnitPrice(1590);
@@ -96,6 +97,8 @@ public class CreateCitPaymentChargeTests {
         item.setDescription("Cat ladder");
         item.setStamp(UUID.randomUUID().toString());
         item.setReference("9187445");
+        item.setOrderId("12335");
+        item.setMerchant("695874");
         payload.setItems(Arrays.asList(item));
 
         Customer customer = new Customer();
@@ -134,7 +137,23 @@ public class CreateCitPaymentChargeTests {
         payload.setInvoicingAddress(invoicingAddress);
 
         payload.setGroups(Arrays.asList(PaytrailPaymentMethodGroup.mobile.toString()));
-
+        payload.setToken(this.getToken());
         return payload;
+    }
+
+    /**
+     * Get token
+     *
+     * @return
+     */
+    private String getToken() {
+        PaytrailClient payTrail = new PaytrailClient(MERCHANTIDSIS, SECRETKEYSIS, "test");
+        GetTokenRequest getTokenRequest = new GetTokenRequest();
+        getTokenRequest.setCheckoutTokenizationId("1d0a51f6-a60c-477b-94e2-403a0ed37199");
+        GetTokenResponse getTokenResponse = payTrail.createGetTokenRequest(getTokenRequest);
+        if (getTokenResponse == null || getTokenResponse.getReturnCode() != ResponseMessage.OK.getCode()) {
+            return null;
+        }
+        return getTokenResponse.getData().getToken();
     }
 }

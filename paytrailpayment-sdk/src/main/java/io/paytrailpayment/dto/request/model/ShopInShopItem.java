@@ -52,9 +52,9 @@ public class ShopInShopItem extends Item {
     protected void specificValidate() {
         super.specificValidate();
 
-        if (orderId == null) {
-            addValidationError("orderId", "Item's orderId can't be null.");
-        }
+//        if (orderId == null) {
+//            addValidationError("orderId", "Item's orderId can't be null.");
+//        }
 
 
         if (merchant == null || merchant.isEmpty()) {

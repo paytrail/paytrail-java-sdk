@@ -1,10 +1,14 @@
 package io.paytrailpayment;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.paytrailpayment.dto.request.AddCardFormRequest;
 import io.paytrailpayment.dto.response.AddCardFormResponse;
 import io.paytrailpayment.utilites.ResponseMessage;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,7 +51,7 @@ public class CreateAddCardFormRequestTests extends TestCase {
     }
 
     @Test
-    public void createAddCardFormRequest_Success_ReturnCode200() {
+    public void createAddCardFormRequest_Success_ReturnCode200() throws NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
         // Arrange
         int expected = ResponseMessage.OK.getCode();
 
@@ -60,9 +64,8 @@ public class CreateAddCardFormRequestTests extends TestCase {
         request.setCheckoutTimestamp("2023-08-22T04:05:20.253Z");
         request.setCheckoutRedirectSuccessUrl("https://somedomain.com/success");
         request.setCheckoutRedirectCancelUrl("https://somedomain.com/cancel");
-        request.setSignature("542e780c253761ed64333d5485391ddd4f55d5e00b7bdc7f60f0f0d15516f889");
         request.setLanguage("EN");
-
+        request.setSignature("542e780c253761ed64333d5485391ddd4f55d5e00b7bdc7f60f0f0d15516f889");
         AddCardFormResponse res = payTrail.createAddCardFormRequest(request);
         int actual = res.getReturnCode();
 
