@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,9 +25,9 @@ public class Item extends Request {
     private int units;
 
     /**
-     * VAT percentage
+     * VAT percentage, with one decimal precision.
      */
-    private int vatPercentage;
+    private BigDecimal vatPercentage;
 
     /**
      * Merchant product code. May appear on invoices of certain payment methods. Maximum of 100 characters
@@ -42,10 +44,10 @@ public class Item extends Request {
      */
     private String category;
 
-    /**
-     * Item level order ID (suborder ID). Mainly useful for Shop-in-Shop purchases.
-     */
-    private String orderId;
+//    /**
+//     * Item level order ID (suborder ID). Mainly useful for Shop-in-Shop purchases.
+//     */
+//    private String orderId;
 
     /**
      * Unique identifier for this item. Required for Shop-in-Shop payments. Required for item refunds.
@@ -57,15 +59,15 @@ public class Item extends Request {
      */
     private String reference;
 
-    /**
-     * Merchant ID for the item. Required for Shop-in-Shop payments, do not use for normal payments.
-     */
-    private String merchant;
-
-    /**
-     * Shop-in-Shop commission. Do not use for normal payments.
-     */
-    private Commission commission;
+//    /**
+//     * Merchant ID for the item. Required for Shop-in-Shop payments, do not use for normal payments.
+//     */
+//    private String merchant;
+//
+//    /**
+//     * Shop-in-Shop commission. Do not use for normal payments.
+//     */
+//    private Commission commission;
 
     @Override()
     protected void specificValidate() {
@@ -77,8 +79,14 @@ public class Item extends Request {
             addValidationError("units", "Item's units are invalid. ");
         }
 
-        if (vatPercentage < 0) {
-            addValidationError("vatPercentage", "Item's vat Percentage can't be a negative number.");
+        if (vatPercentage == null || vatPercentage.compareTo(BigDecimal.ZERO) < 0) {
+            addValidationError("vatPercentage", "Item's vat Percentage can't be null or a negative number.");
+        } else {
+            // Check if vatPercentage has more than one decimal place
+            int scale = vatPercentage.stripTrailingZeros().scale();
+            if (scale > 1) {
+                addValidationError("vatPercentage", "Item's vat Percentage can't have more than one decimal place.");
+            }
         }
 
         if (productCode == null) {
@@ -95,6 +103,14 @@ public class Item extends Request {
             addValidationError("description", "Item's description is more than 1000 characters.");
         }
 
+    }
+    public Item(int unitPrice, int units, BigDecimal vatPercentage, String productCode, String category, String description) {
+        this.unitPrice = unitPrice;
+        this.units = units;
+        this.vatPercentage = vatPercentage;
+        this.productCode = productCode;
+        this.category = category;
+        this.description = description;
     }
 }
 

@@ -6,16 +6,11 @@ import io.paytrailpayment.exception.PaytrailCommunicationException;
 import io.paytrailpayment.utilites.Constants;
 import io.paytrailpayment.utilites.ResponseMessage;
 import io.paytrailpayment.utilites.Signature;
-import org.apache.hc.client5.http.classic.HttpClient;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.entity.EntityBuilder;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.io.HttpClientResponseHandler;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -34,8 +29,8 @@ public abstract class Paytrail {
             headers.put(Constants.CHECKOUT_METHOD_HEADER, method.toUpperCase());
             headers.put(Constants.CHECKOUT_NONCE_HEADER, UUID.randomUUID().toString());
             headers.put(Constants.CHECKOUT_TIMESTAMP_HEADER, String.format("%tFT%<tT.%<tLZ", datetime));
-            headers.put(Constants.PLATFORM_NAME_HEADER, this.platformName);
-            headers.put(Constants.CONTENT_TYPE_HEADER, Constants.CONTENT_TYPE);
+//      headers.put(Constants.PLATFORM_NAME_HEADER, this.platformName);
+//      headers.put(Constants.CONTENT_TYPE_HEADER, Constants.CONTENT_TYPE);
 
             if (transactionId != null && !transactionId.isEmpty()) {
                 headers.put(Constants.CHECKOUT_TRANSACTION_ID_HEADER, transactionId);
@@ -64,70 +59,65 @@ public abstract class Paytrail {
         return Signature.calculateHmac(this.secretKey, hdparams, body, Constants.SHA256_ALGORITHM);
     }
 
-    protected DataResponse handleRequest(String method, String url, String body, String transactionId, String checkoutTokenizationId) throws PaytrailClientException, PaytrailCommunicationException{
+    protected DataResponse handleRequest(String method, String url, String body, String transactionId, String checkoutTokenizationId) throws PaytrailClientException, PaytrailCommunicationException {
+        return handleRequest(method, url, body, transactionId, checkoutTokenizationId, false);
+    }
+
+    protected DataResponse handleRequest(String method, String url, String body,
+                                         String transactionId, String checkoutTokenizationId, boolean skipAuthHeaders)
+            throws PaytrailClientException, PaytrailCommunicationException {
         DataResponse res = new DataResponse();
         try {
-            Map<String, String> hdparams = getHeaders(method, transactionId, checkoutTokenizationId);
+            Map<String, String> hdparams = null;
 
-            String signature = calculateHmac(hdparams, body);
+            if (!skipAuthHeaders) {
+                hdparams = getHeaders(method, transactionId, checkoutTokenizationId);
+                String signature = calculateHmac(hdparams, body);
 
-            if (signature.isEmpty()) {
-                res.setStatusCode(ResponseMessage.BAD_REQUEST.getCode());
-                res.setData(ResponseMessage.BAD_REQUEST.getDescription());
-                return res;
-            }
-
-            hdparams = getHeaders(hdparams, Constants.SIGNATURE_HEADER, signature);
-
-            // Create new request
-            HttpClient httpClient = HttpClientBuilder.create().build();
-
-            HttpPost httpPost = new HttpPost(url);
-            HttpGet httpGet = new HttpGet(url);
-
-            if (Objects.equals(method, Constants.POST_METHOD)) {
-                EntityBuilder builder = EntityBuilder
-                        .create()
-                        .setText(body);
-                httpPost.setEntity(builder.build());
-
-                for (Map.Entry<String, String> entry : hdparams.entrySet()) {
-                    httpPost.setHeader(entry.getKey(), entry.getValue());
+                if (signature.isEmpty()) {
+                    res.setStatusCode(ResponseMessage.BAD_REQUEST.getCode());
+                    res.setData(ResponseMessage.BAD_REQUEST.getDescription());
+                    return res;
                 }
-            } else if (Objects.equals(method, Constants.GET_METHOD)) {
+
+                hdparams = getHeaders(hdparams, Constants.SIGNATURE_HEADER, signature);
+            } else {
+                Map<String, String> headers = new HashMap<>();
+                hdparams = getHeaders(headers, Constants.CONTENT_TYPE_HEADER, Constants.CONTENT_TYPE);
+                hdparams = getHeaders(hdparams, Constants.PLATFORM_NAME_HEADER, this.platformName);
+            }
+            // Build the OkHttpClient instance (add interceptors if needed for logging)
+            OkHttpClient client = new OkHttpClient.Builder().build();
+
+            // Build the request, adding headers if available
+            okhttp3.Request.Builder requestBuilder = new okhttp3.Request.Builder().url(url);
+            if (hdparams != null) {
                 for (Map.Entry<String, String> entry : hdparams.entrySet()) {
-                    httpGet.setHeader(entry.getKey(), entry.getValue());
+                    requestBuilder.addHeader(entry.getKey(), entry.getValue());
                 }
             }
+            if (Constants.POST_METHOD.equals(method)) {
+                RequestBody requestBody = RequestBody.create(body.getBytes(StandardCharsets.UTF_8));
+                requestBuilder.post(requestBody);
+            } else if (Constants.GET_METHOD.equals(method)) {
+                requestBuilder.get();
+            }
 
-            // Send request
-            HttpClientResponseHandler<String> handler = response -> {
-                int status = response.getCode();
-                HttpEntity entity = response.getEntity();
-                String getResponseString = entity != null ? EntityUtils.toString(entity) : null;
-                if (entity != null) {
-                    EntityUtils.consume(entity);
-                }
-
+            okhttp3.Request request = requestBuilder.build();
+            // Execute the request
+            try (okhttp3.Response response = client.newCall(request).execute()) {
+                int status = response.code();
+                String responseString = response.body() != null ? response.body().string() : null;
                 res.setStatusCode(status);
-                res.setData(getResponseString);
-
-                return getResponseString;
-            };
-
-            // Execute
-            if (Objects.equals(method, Constants.POST_METHOD)) {
-                httpClient.execute(httpPost, handler);
-            } else if (Objects.equals(method, Constants.GET_METHOD)) {
-                httpClient.execute(httpGet, handler);
+                res.setData(responseString);
             }
 
             return res;
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            // throw the exception related to the client.
+            // Exception related to the client (e.g., HMAC calculation)
             throw new PaytrailClientException(ResponseMessage.RESPONSE_ERROR.getCode(), e.toString(), e);
         } catch (IOException e) {
-            // throw the exception related to the communication with the server.
+            // Exception related to communication issues
             throw new PaytrailCommunicationException(ResponseMessage.EXCEPTION.getCode(), e.getMessage(), e);
         }
     }
