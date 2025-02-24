@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-version: [8,11,17]
+        java-version: [8,11,17,21]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,16 +21,20 @@ jobs:
         with:
           java-version: ${{ matrix.java-version }}
           distribution: temurin
-      - name: Validate Maven dependencies
+      - name: Check current Java version
+        run: java -version
+
+        # Step 3: Validate Maven dependencies
+      - name: Validate Maven dependencies with Java ${{ matrix.java-version }}
         working-directory: ./paytrailpayment-sdk
         run: mvn dependency:resolve
   
         # Step 4: Run Maven lint checks (Checkstyle, SpotBugs, etc.)
-      - name: Run Maven lint checks
+      - name: Run Maven lint checks with Java ${{ matrix.java-version }}
         working-directory: ./paytrailpayment-sdk
         run: mvn checkstyle:check
 
         # Step 5: Run Maven tests
-      - name: Run Maven tests
+      - name: Run Maven tests with Java ${{ matrix.java-version }}
         working-directory: ./paytrailpayment-sdk
         run: mvn test
