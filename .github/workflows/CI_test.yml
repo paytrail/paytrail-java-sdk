@@ -21,6 +21,7 @@ jobs:
         with:
           java-version: ${{ matrix.java-version }}
           distribution: temurin
+          cache: maven
       - name: Check current Java version
         run: java -version
 
