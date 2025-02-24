@@ -16,11 +16,12 @@ public class CreateMitPaymentCommitTests {
     private static final String MERCHANTIDN = "375917";
     private static final String MERCHANTIDSIS = "695861";
     private static final String SECRETKEYSIS = "MONISAIPPUAKAUPPIAS";
+    private static final String SECRETKEYSIS_BAD = "MONISAIPPUAKAUPPIASS";
 
     @Test
     public void createMitPaymentCommit_RequestNull_ReturnCode400() {
         // Arrange
-        int expected = ResponseMessage.RESPONSE_NULL.getCode();
+        int expected = ResponseMessage.BAD_REQUEST.getCode();
 
         // Act
         PaytrailClient payTrail = new PaytrailClient(MERCHANTIDN, SECRETKEYSIS, "test");
@@ -35,7 +36,7 @@ public class CreateMitPaymentCommitTests {
     @Test
     public void createMitPaymentCommit_ValidateFalse_ReturnCode403() {
         // Arrange
-        int expected = ResponseMessage.VALIDATION_FAILED.getCode();
+        int expected = ResponseMessage.BAD_REQUEST.getCode();
 
         // Act
         PaytrailClient payTrail = new PaytrailClient(MERCHANTIDN, SECRETKEYSIS, "test");
@@ -63,12 +64,12 @@ public class CreateMitPaymentCommitTests {
     }
 
     @Test
-    public void createMitPaymentCommit_CallPaytrailReturnFail_ReturnCode500() {
+    public void createMitPaymentCommit_CallPaytrailReturnFail_ReturnCode401() {
         // Arrange
-        int expected = ResponseMessage.RESPONSE_ERROR.getCode();
+        int expected = ResponseMessage.UNAUTHORIZED.getCode();
 
         // Act
-        PaytrailClient payTrail = new PaytrailClient(MERCHANTIDSIS, SECRETKEYSIS, "test");
+        PaytrailClient payTrail = new PaytrailClient(MERCHANTIDSIS, SECRETKEYSIS_BAD, "test");
         CreateMitOrCitPaymentRequest payload = createValidPayload();
         CreateMitOrCitPaymentResponse res = payTrail.createMitPaymentCommit(payload, "0e056dd8-408f-11ee-9cb4-e3059a523029");
         int actual = res.getReturnCode();

@@ -21,7 +21,7 @@ public class CreateCitPaymentAuthorizationHoldTests {
     @Test
     public void createCitPaymentAuthorizationHold_RequestNull_ReturnCode400() {
         // Arrange
-        int expected = ResponseMessage.RESPONSE_NULL.getCode();
+        int expected = ResponseMessage.BAD_REQUEST.getCode();
 
         // Act
         PaytrailClient payTrail = new PaytrailClient(MERCHANTIDN, SECRETKEYSIS, "test");
@@ -34,13 +34,15 @@ public class CreateCitPaymentAuthorizationHoldTests {
     }
 
     @Test
-    public void createCitPaymentAuthorizationHold_ValidateFalse_ReturnCode403() {
+    public void createCitPaymentAuthorizationHold_ValidateFalse_ReturnCode401() {
         // Arrange
-        int expected = ResponseMessage.VALIDATION_FAILED.getCode();
+        int expected = ResponseMessage.UNAUTHORIZED.getCode();
 
         // Act
         PaytrailClient payTrail = new PaytrailClient(MERCHANTIDN, SECRETKEYSIS, "test");
-        CreateMitOrCitPaymentRequest request = new CreateMitOrCitPaymentRequest();
+        CreateMitOrCitPaymentRequest request = createValidPayload();
+        // set wrong token
+        request.setToken("1d0a51f6-a60c-477b-94e2-403a0ed37199");
         CreateMitOrCitPaymentResponse res = payTrail.createCitPaymentCharge(request);
         int actual = res.getReturnCode();
 
@@ -63,9 +65,9 @@ public class CreateCitPaymentAuthorizationHoldTests {
     }
 
     @Test
-    public void createCitPaymentAuthorizationHold_CallPaytrailReturnFail_ReturnCode500() {
+    public void createCitPaymentAuthorizationHold_CallPaytrailReturnFail_ReturnCode400() {
         // Arrange
-        int expected = ResponseMessage.RESPONSE_ERROR.getCode();
+        int expected = ResponseMessage.BAD_REQUEST.getCode();
 
         // Act
         PaytrailClient payTrail = new PaytrailClient(MERCHANTIDSIS, SECRETKEYSIS, "test");

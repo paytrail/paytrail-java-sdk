@@ -37,12 +37,21 @@ public class CreateAddCardFormRequestTests extends TestCase {
     }
 
     @Test
-    public void createAddCardFormRequest_ValidateFalse_ReturnCode403() {
+    public void createAddCardFormRequest_ValidateFalse_ReturnCode401() {
         // Arrange
-        int expected = ResponseMessage.VALIDATION_FAILED.getCode();
+        int expected = ResponseMessage.UNAUTHORIZED.getCode();
 
         // Act
         AddCardFormRequest request = new AddCardFormRequest();
+        request.setCheckoutAccount(375917);
+        request.setCheckoutAlgorithm("sha256");
+        request.setCheckoutMethod("POST");
+        request.setCheckoutNonce("6501220b16b7");
+        request.setCheckoutTimestamp("2023-08-22T04:05:20.253Z");
+        request.setCheckoutRedirectSuccessUrl("https://somedomain.com/success");
+        request.setCheckoutRedirectCancelUrl("https://somedomain.com/cancel");
+        request.setLanguage("EN");
+        request.setSignature("542e780c253761ed64333d5485391ddd4f55d5e00b7bdc7f60f0f0d15516f888");
         AddCardFormResponse res = payTrail.createAddCardFormRequest(request);
         int actual = res.getReturnCode();
 

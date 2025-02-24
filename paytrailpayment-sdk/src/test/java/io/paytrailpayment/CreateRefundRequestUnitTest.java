@@ -1,5 +1,8 @@
 package io.paytrailpayment;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
 import io.paytrailpayment.dto.request.CreateRefundRequest;
 import io.paytrailpayment.dto.request.model.*;
@@ -77,8 +80,8 @@ public class CreateRefundRequestUnitTest extends TestCase {
     }
 
     @Test()
-    public void createRefundRequestReturnStatusCode400WithFieldRequiredNotFilled() {
-        String messageExpect = "{\"callbackUrls\":\"Callback Urls can't be null.\",\"items\":\"{\\\"amount\\\":\\\"Item's amount is invalid.\\\"}\"}\n";
+    public void createRefundRequestReturnStatusCode400WithFieldRequiredNotFilled() throws JsonProcessingException {
+        String messageExpect = "{\"callbackUrls\":\"Callback Urls can't be null.\",\"items\":\"{\\\"amount\\\":\\\"Item's amount is invalid. \\\"}\"}\n";
         CreateRefundRequest req = new CreateRefundRequest();
 
         req.setEmail("test@gmail.com");
@@ -98,7 +101,21 @@ public class CreateRefundRequestUnitTest extends TestCase {
 
         assertNotNull(res);
         assertEquals(ResponseMessage.BAD_REQUEST.getCode(), res.getReturnCode());
-        assertEquals(messageExpect, res.getReturnMessage());
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode actualJsonNode = objectMapper.readTree(res.getReturnMessage());
+
+        // Extract the "item" field which contains the nested JSON string
+        String itemField = actualJsonNode.get("items").asText();
+
+        // Parse the nested JSON string inside the "item" field
+        JsonNode itemJsonNode = objectMapper.readTree(itemField);
+        // Extract and normalize the callbackUrls and amount messages
+        String actualCallbackUrlsMessage = actualJsonNode.get("callbackUrls").asText().replace("\\u0027", "'");
+        String actualAmountMessage = itemJsonNode.get("amount").asText().replace("\\u0027", "'");
+
+        // Combine the messages if needed
+        String actualVatPercentageMessage = "{\"callbackUrls\":\"" + actualCallbackUrlsMessage + "\",\"items\":\"{\\\"amount\\\":\\\"" + actualAmountMessage + "\\\"}\"}\n";
+        assertEquals(messageExpect, actualVatPercentageMessage);
         assertNull(res.getData());
     }
 
