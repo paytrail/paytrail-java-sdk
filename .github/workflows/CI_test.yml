@@ -1,0 +1,31 @@
+name: Lint and Test
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [8]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: temurin
+      - name: Validate Maven dependencies
+        working-directory: ./paytrailpayment-sdk
+        run: mvn dependency:resolve
+  
+        # Step 4: Run Maven lint checks (Checkstyle, SpotBugs, etc.)
+      - name: Run Maven lint checks
+        working-directory: ./paytrailpayment-sdk
+        run: mvn checkstyle:check
