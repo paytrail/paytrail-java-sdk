@@ -9,8 +9,8 @@ import io.paytrailpayment.dto.request.model.*;
 import io.paytrailpayment.dto.response.CreatePaymentResponse;
 import io.paytrailpayment.dto.response.CreateRefundResponse;
 import io.paytrailpayment.utilites.ResponseMessage;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -23,8 +23,8 @@ public class CreateRefundRequestUnitTest extends TestCase {
     private PaytrailClient client;
     private String transactionId;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    public void init() {
         client = new PaytrailClient(this.merchantId, this.secretKey, this.platformName);
 
         CreatePaymentRequest req = new CreatePaymentRequest();

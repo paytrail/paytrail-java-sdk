@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.paytrailpayment.dto.request.AddCardFormRequest;
 import io.paytrailpayment.dto.response.AddCardFormResponse;
 import io.paytrailpayment.utilites.ResponseMessage;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -17,8 +17,8 @@ public class CreateAddCardFormRequestTests extends TestCase {
     private static final String SECRETKEYSIS = "MONISAIPPUAKAUPPIAS";
     private PaytrailClient payTrail;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    public void init() {
         payTrail = new PaytrailClient(MERCHANTIDSIS, SECRETKEYSIS, "test");
     }
 
