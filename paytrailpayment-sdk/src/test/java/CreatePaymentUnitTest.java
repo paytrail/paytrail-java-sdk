@@ -1,6 +1,3 @@
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.paytrailpayment.PaytrailClient;
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
 import io.paytrailpayment.dto.request.model.*;
@@ -11,7 +8,6 @@ import io.paytrailpayment.utilites.ResponseMessage;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,7 +31,7 @@ public class CreatePaymentUnitTest extends TestCase {
     }
 
     @Test()
-    public void createPaymentReturnStatusCode400WithFieldRequiredNotFilled() throws JsonProcessingException {
+    public void createPaymentReturnStatusCode400WithFieldRequiredNotFilled() {
         String messageExpect = "{\"reference\":\"Reference can't be null or empty.\",\"amount\":\"Amount doesn't match total of items.\",\"stamp\":\"Stamp can't be null or empty.\",\"currency\":\"Currency can't be null.\",\"language\":\"Language can't be null.\"}";
         CreatePaymentRequest req = new CreatePaymentRequest();
 
@@ -45,7 +41,7 @@ public class CreatePaymentUnitTest extends TestCase {
         Item item = new Item();
         item.setUnitPrice(1590);
         item.setUnits(1);
-        item.setVatPercentage(new BigDecimal(24));
+        item.setVatPercentage(24);
         item.setProductCode("#927502759");
         items.add(item);
 
@@ -74,11 +70,7 @@ public class CreatePaymentUnitTest extends TestCase {
 
         assertNotNull(res);
         assertEquals(ResponseMessage.BAD_REQUEST.getCode(), res.getReturnCode());
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode expectedJson = objectMapper.readTree(messageExpect);
-        JsonNode actualJson = objectMapper.readTree(res.getReturnMessage());
-
-        assertEquals(expectedJson, actualJson);
+        assertEquals(messageExpect, res.getReturnMessage());
         assertNull(res.getData());
     }
 
@@ -114,7 +106,7 @@ public class CreatePaymentUnitTest extends TestCase {
         Item item = new Item();
         item.setUnitPrice(1590);
         item.setUnits(1);
-        item.setVatPercentage(new BigDecimal(24));
+        item.setVatPercentage(24);
         item.setProductCode("#927502759");
         items.add(item);
 
@@ -164,7 +156,7 @@ public class CreatePaymentUnitTest extends TestCase {
         Item item = new Item();
         item.setUnitPrice(1590);
         item.setUnits(1);
-        item.setVatPercentage(new BigDecimal(24));
+        item.setVatPercentage(24);
         item.setProductCode("#927502759");
         items.add(item);
 
@@ -194,152 +186,4 @@ public class CreatePaymentUnitTest extends TestCase {
         assertNotNull(res);
         assertEquals(ResponseMessage.UNAUTHORIZED.getCode(), res.getReturnCode());
     }
-
-    @Test()
-    public void createPaymentReturnStatusCode400WithVatPercentageMoreThanOneDecimalPlace() throws Exception {
-        CreatePaymentRequest req = new CreatePaymentRequest();
-
-        req.setStamp(UUID.randomUUID().toString());
-        req.setReference("9187445");
-        req.setCurrency(PaytrailCurrency.EUR);
-        req.setLanguage(PaytrailLanguage.EN);
-        req.setOrderId("12335");
-        req.setAmount(1590);
-
-        List<Item> items = new ArrayList<>();
-        Item item = new Item();
-        item.setUnitPrice(1590);
-        item.setUnits(1);
-        item.setVatPercentage(new BigDecimal("24.55")); // VatPercentage has more than one decimal place
-        item.setProductCode("#927502759");
-        items.add(item);
-
-        req.setItems(items);
-
-        CreatePaymentResponse res = client.createPayment(req);
-
-        assertNotNull(res);
-        assertEquals(ResponseMessage.BAD_REQUEST.getCode(), res.getReturnCode());
-
-        // Expected vatPercentage message
-        String expectedVatPercentageMessage = "Item's vat Percentage can't have more than one decimal place.";
-
-        // Parse the actual response message to a JsonNode
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode actualJsonNode = objectMapper.readTree(res.getReturnMessage());
-
-        // Extract the "item" field which contains the nested JSON string
-        String itemField = actualJsonNode.get("item").asText();
-
-        // Parse the nested JSON string inside the "item" field
-        JsonNode itemJsonNode = objectMapper.readTree(itemField);
-
-        // Extract and normalize the vatPercentage message
-        String actualVatPercentageMessage = itemJsonNode.get("vatPercentage").asText().replace("\\u0027", "'");
-
-        // Compare the actual vatPercentage message with the expected one
-        assertEquals(expectedVatPercentageMessage, actualVatPercentageMessage);
-
-        assertNull(res.getData());
-    }
-
-    @Test()
-    public void createPaymentReturnStatusCode400WithVatPercentageNegative() throws Exception {
-        CreatePaymentRequest req = new CreatePaymentRequest();
-
-        req.setStamp(UUID.randomUUID().toString());
-        req.setReference("9187445");
-        req.setCurrency(PaytrailCurrency.EUR);
-        req.setLanguage(PaytrailLanguage.EN);
-        req.setOrderId("12335");
-        req.setAmount(1590);
-
-        List<Item> items = new ArrayList<>();
-        Item item = new Item();
-        item.setUnitPrice(1590);
-        item.setUnits(1);
-        item.setVatPercentage(new BigDecimal("-5.0")); // VatPercentage is negative
-        item.setProductCode("#927502759");
-        items.add(item);
-
-        req.setItems(items);
-
-        CreatePaymentResponse res = client.createPayment(req);
-
-        assertNotNull(res);
-        assertEquals(ResponseMessage.BAD_REQUEST.getCode(), res.getReturnCode());
-
-        // Expected vatPercentage message
-        String expectedVatPercentageMessage = "Item's vat Percentage can't be null or a negative number.";
-
-        // Parse the actual response message to a JsonNode
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode actualJsonNode = objectMapper.readTree(res.getReturnMessage());
-
-        // Extract the "item" field which contains the nested JSON string
-        String itemField = actualJsonNode.get("item").asText();
-
-        // Parse the nested JSON string inside the "item" field
-        JsonNode itemJsonNode = objectMapper.readTree(itemField);
-
-        // Extract and normalize the vatPercentage message
-        String actualVatPercentageMessage = itemJsonNode.get("vatPercentage").asText().replace("\\u0027", "'");
-
-        // Compare the actual vatPercentage message with the expected one
-        assertEquals(expectedVatPercentageMessage, actualVatPercentageMessage);
-
-        assertNull(res.getData());
-    }
-
-
-
-    @Test()
-    public void createPaymentReturnStatusCode400WithVatPercentageNull() throws Exception {
-        CreatePaymentRequest req = new CreatePaymentRequest();
-        req.setStamp(UUID.randomUUID().toString());
-        req.setReference("9187445");
-        req.setCurrency(PaytrailCurrency.EUR);
-        req.setLanguage(PaytrailLanguage.EN);
-        req.setOrderId("12335");
-        req.setAmount(1590);
-
-        List<Item> items = new ArrayList<>();
-        Item item = new Item();
-        item.setUnitPrice(1590);
-        item.setUnits(1);
-        item.setVatPercentage(null); // VatPercentage is null
-        item.setProductCode("#927502759");
-        items.add(item);
-
-        req.setItems(items);
-
-        CreatePaymentResponse res = client.createPayment(req);
-
-        assertNotNull(res);
-        assertEquals(ResponseMessage.BAD_REQUEST.getCode(), res.getReturnCode());
-
-        // Expected vatPercentage message
-        String expectedVatPercentageMessage = "Item's vat Percentage can't be null or a negative number.";
-
-        // Parse the actual response message to a JsonNode
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode actualJsonNode = objectMapper.readTree(res.getReturnMessage());
-
-        // Extract the "item" field which contains the nested JSON string
-        String itemField = actualJsonNode.get("item").asText();
-
-        // Parse the nested JSON string inside the "item" field
-        JsonNode itemJsonNode = objectMapper.readTree(itemField);
-
-        // Extract and normalize the vatPercentage message
-        String actualVatPercentageMessage = itemJsonNode.get("vatPercentage").asText().replace("\\u0027", "'");
-
-        // Compare the actual vatPercentage message with the expected one
-        assertEquals(expectedVatPercentageMessage, actualVatPercentageMessage);
-
-        assertNull(res.getData());
-    }
-
-
-
 }

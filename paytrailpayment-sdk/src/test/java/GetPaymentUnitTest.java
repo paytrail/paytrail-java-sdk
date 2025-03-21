@@ -1,5 +1,4 @@
-package io.paytrailpayment;
-
+import io.paytrailpayment.PaytrailClient;
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
 import io.paytrailpayment.dto.request.model.*;
 import io.paytrailpayment.dto.response.CreatePaymentResponse;
@@ -8,7 +7,6 @@ import io.paytrailpayment.utilites.ResponseMessage;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -36,7 +34,7 @@ public class GetPaymentUnitTest extends TestCase {
         Item item = new Item();
         item.setUnitPrice(1590);
         item.setUnits(1);
-        item.setVatPercentage(new BigDecimal(24));
+        item.setVatPercentage(24);
         item.setProductCode("#927502759");
         items.add(item);
 

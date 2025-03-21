@@ -7,8 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,9 +23,9 @@ public class Item extends Request {
     private int units;
 
     /**
-     * VAT percentage, with one decimal precision.
+     * VAT percentage
      */
-    private BigDecimal vatPercentage;
+    private int vatPercentage;
 
     /**
      * Merchant product code. May appear on invoices of certain payment methods. Maximum of 100 characters
@@ -79,14 +77,8 @@ public class Item extends Request {
             addValidationError("units", "Item's units are invalid. ");
         }
 
-        if (vatPercentage == null || vatPercentage.compareTo(BigDecimal.ZERO) < 0) {
-            addValidationError("vatPercentage", "Item's vat Percentage can't be null or a negative number.");
-        } else {
-            // Check if vatPercentage has more than one decimal place
-            int scale = vatPercentage.stripTrailingZeros().scale();
-            if (scale > 1) {
-                addValidationError("vatPercentage", "Item's vat Percentage can't have more than one decimal place.");
-            }
+        if (vatPercentage < 0) {
+            addValidationError("vatPercentage", "Item's vat Percentage can't be a negative number.");
         }
 
         if (productCode == null) {
