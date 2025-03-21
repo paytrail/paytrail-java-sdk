@@ -14,10 +14,6 @@ public class Constants {
     public static final String CONTENT_TYPE_HEADER = "content-type";
     public static final String CONTENT_TYPE = "application/json; charset=utf-8";
 
-    public static final String EMAIL_REGEX =
-            "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-
-
     public static final String POST_METHOD = "POST";
     public static final String GET_METHOD = "GET";
 
