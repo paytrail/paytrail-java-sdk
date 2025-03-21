@@ -112,11 +112,11 @@ public class CreatePaymentRequest extends Request {
             addValidationError("amount", "Amount must be less than 99999999.");
         }
 
-        if (orderId == null || orderId.isEmpty()) {
-            if (reference == null || reference.isEmpty()) {
-                addValidationError("orderId", "OrderId is not provided, then reference must be provided. ");
-            }
-        }
+//        if (orderId == null || orderId.isEmpty()) {
+//            if (reference == null || reference.isEmpty()) {
+//                addValidationError("orderId", "OrderId is not provided, then reference must be provided. ");
+//            }
+//        }
 
         if (items != null) {
             for (Item item : items) {

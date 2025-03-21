@@ -1,12 +1,11 @@
 package io.paytrailpayment;
 
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
-import io.paytrailpayment.dto.request.model.CallbackUrl;
-import io.paytrailpayment.dto.request.model.Customer;
-import io.paytrailpayment.dto.request.model.Item;
+import io.paytrailpayment.dto.request.model.*;
 import io.paytrailpayment.dto.response.CreatePaymentResponse;
 import io.paytrailpayment.utilites.ResponseMessage;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,8 +18,8 @@ public class Main {
 
         req.setStamp(UUID.randomUUID().toString());
         req.setReference("9187445");
-        req.setCurrency("EUR");
-        req.setLanguage("FI");
+        req.setCurrency(PaytrailCurrency.EUR);
+        req.setLanguage(PaytrailLanguage.FI);
         req.setOrderId("12335");
         req.setAmount(1590);
 
@@ -28,7 +27,7 @@ public class Main {
         Item item = new Item();
         item.setUnitPrice(1590);
         item.setUnits(1);
-        item.setVatPercentage(24);
+        item.setVatPercentage(new BigDecimal(24));
         item.setProductCode("#927502759");
         items.add(item);
 

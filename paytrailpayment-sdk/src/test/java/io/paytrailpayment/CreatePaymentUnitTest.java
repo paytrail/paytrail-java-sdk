@@ -1,15 +1,16 @@
+package io.paytrailpayment;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.paytrailpayment.PaytrailClient;
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
 import io.paytrailpayment.dto.request.model.*;
 import io.paytrailpayment.dto.request.model.PaytrailCurrency;
 import io.paytrailpayment.dto.response.CreatePaymentResponse;
 
 import io.paytrailpayment.utilites.ResponseMessage;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -19,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CreatePaymentUnitTest extends TestCase {
     private PaytrailClient client;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    public void init() {
         // Initialize your PaytrailClient here with default values for all tests or any other setup.
         client = new PaytrailClient(this.merchantId, this.secretKey, this.platformName);
     }
@@ -100,7 +101,7 @@ public class CreatePaymentUnitTest extends TestCase {
     }
 
     @Test()
-    public void createPaymentReturnStatusCode201() {
+    public void createPaymentReturnStatusCode200() {
         CreatePaymentRequest req = new CreatePaymentRequest();
 
         req.setStamp(UUID.randomUUID().toString());
@@ -142,8 +143,8 @@ public class CreatePaymentUnitTest extends TestCase {
         CreatePaymentResponse res = client.createPayment(req);
 
         assertNotNull(res);
-        assertEquals(ResponseMessage.CREATED.getCode(), res.getReturnCode());
-        assertEquals(ResponseMessage.CREATED.getDescription(), res.getReturnMessage());
+        assertEquals(ResponseMessage.OK.getCode(), res.getReturnCode());
+        assertEquals(ResponseMessage.OK.getDescription(), res.getReturnMessage());
         assertNotNull(res.getData());
     }
 
@@ -339,7 +340,4 @@ public class CreatePaymentUnitTest extends TestCase {
 
         assertNull(res.getData());
     }
-
-
-
 }

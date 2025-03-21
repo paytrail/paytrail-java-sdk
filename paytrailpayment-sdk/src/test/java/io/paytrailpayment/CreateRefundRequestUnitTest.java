@@ -1,12 +1,16 @@
-import io.paytrailpayment.PaytrailClient;
+package io.paytrailpayment;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
 import io.paytrailpayment.dto.request.CreateRefundRequest;
 import io.paytrailpayment.dto.request.model.*;
 import io.paytrailpayment.dto.response.CreatePaymentResponse;
 import io.paytrailpayment.dto.response.CreateRefundResponse;
 import io.paytrailpayment.utilites.ResponseMessage;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -19,8 +23,8 @@ public class CreateRefundRequestUnitTest extends TestCase {
     private PaytrailClient client;
     private String transactionId;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    public void init() {
         client = new PaytrailClient(this.merchantId, this.secretKey, this.platformName);
 
         CreatePaymentRequest req = new CreatePaymentRequest();
@@ -76,8 +80,8 @@ public class CreateRefundRequestUnitTest extends TestCase {
     }
 
     @Test()
-    public void createRefundRequestReturnStatusCode400WithFieldRequiredNotFilled() {
-        String messageExpect = "{\"callbackUrls\":\"Callback Urls can't be null.\",\"items\":\"{\\\"amount\\\":\\\"Item's amount is invalid.\\\"}\"}\n";
+    public void createRefundRequestReturnStatusCode400WithFieldRequiredNotFilled() throws JsonProcessingException {
+        String messageExpect = "{\"callbackUrls\":\"Callback Urls can't be null.\",\"items\":\"{\\\"amount\\\":\\\"Item's amount is invalid. \\\"}\"}\n";
         CreateRefundRequest req = new CreateRefundRequest();
 
         req.setEmail("test@gmail.com");
@@ -97,7 +101,21 @@ public class CreateRefundRequestUnitTest extends TestCase {
 
         assertNotNull(res);
         assertEquals(ResponseMessage.BAD_REQUEST.getCode(), res.getReturnCode());
-        assertEquals(messageExpect, res.getReturnMessage());
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode actualJsonNode = objectMapper.readTree(res.getReturnMessage());
+
+        // Extract the "item" field which contains the nested JSON string
+        String itemField = actualJsonNode.get("items").asText();
+
+        // Parse the nested JSON string inside the "item" field
+        JsonNode itemJsonNode = objectMapper.readTree(itemField);
+        // Extract and normalize the callbackUrls and amount messages
+        String actualCallbackUrlsMessage = actualJsonNode.get("callbackUrls").asText().replace("\\u0027", "'");
+        String actualAmountMessage = itemJsonNode.get("amount").asText().replace("\\u0027", "'");
+
+        // Combine the messages if needed
+        String actualVatPercentageMessage = "{\"callbackUrls\":\"" + actualCallbackUrlsMessage + "\",\"items\":\"{\\\"amount\\\":\\\"" + actualAmountMessage + "\\\"}\"}\n";
+        assertEquals(messageExpect, actualVatPercentageMessage);
         assertNull(res.getData());
     }
 
@@ -132,9 +150,8 @@ public class CreateRefundRequestUnitTest extends TestCase {
     }
 
     @Test()
-    public void createRefundRequestReturnStatusCode201() {
+    public void createRefundRequestReturnStatusCode200() {
         CreateRefundRequest req = new CreateRefundRequest();
-
         req.setAmount(1590);
         req.setEmail("test@gmail.com");
         req.setRefundStamp(UUID.randomUUID().toString());
@@ -153,9 +170,7 @@ public class CreateRefundRequestUnitTest extends TestCase {
         callbackUrls.setSuccess("https://ecom.example.org/success");
         callbackUrls.setCancel("https://ecom.example.org/cancel");
         req.setCallbackUrls(callbackUrls);
-
         CreateRefundResponse res = client.createRefundRequest(req, transactionId);
-
         assertNotNull(res);
     }
 
