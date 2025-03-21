@@ -2,9 +2,9 @@ package io.paytrailpayment;
 
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
 import io.paytrailpayment.dto.request.CreateRefundRequest;
-import io.paytrailpayment.dto.response.CreatePaymentResponse;
-import io.paytrailpayment.dto.response.CreateRefundResponse;
-import io.paytrailpayment.dto.response.GetPaymentResponse;
+import io.paytrailpayment.dto.request.GetGroupedPaymentProvidersRequest;
+import io.paytrailpayment.dto.request.GetPaymentProvidersRequest;
+import io.paytrailpayment.dto.response.*;
 
 /**
  * Defines methods for interacting with the Paytrail payment system.
@@ -39,4 +39,20 @@ public interface IPaytrail {
      * @see <a href="https://docs.paytrail.com/#/?id=refund">Paytrail Documentation - Create Refund Request</a>
      */
     CreateRefundResponse createRefundRequest(CreateRefundRequest refundRequest, String transactionId);
+
+    /**
+     * HTTP GET /merchants/payment-providers?&amount={Amount}&groups={groupsString} returns a list of available payment providers.
+     * @param req
+     * @return A list of available payment providers.
+     * @see <a href="https://docs.paytrail.com/#/?id=list-providers">Paytrail Documentation - Get Payment Providers</a>
+     */
+    GetPaymentProvidersResponse getPaymentProviders(GetPaymentProvidersRequest req);
+
+    /**
+     * HTTP GET /merchants/grouped-payment-providers?&amount={Amount}&groups={groupsString}&&language={Language} returns a list of available payment providers grouped by payment method group.
+     * @param req
+     * @return A list of available payment providers grouped by payment method group.
+     * @see <a href="https://docs.paytrail.com/#/?id=list-grouped-providers">Paytrail Documentation - Get Grouped Payment Providers</a>
+     */
+    GetGroupedPaymentProvidersResponse getGroupedPaymentProviders(GetGroupedPaymentProvidersRequest req);
 }

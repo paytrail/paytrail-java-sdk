@@ -1,4 +1,5 @@
-import io.paytrailpayment.PaytrailClient;
+package io.paytrailpayment;
+
 import io.paytrailpayment.dto.request.CreatePaymentRequest;
 import io.paytrailpayment.dto.request.CreateRefundRequest;
 import io.paytrailpayment.dto.request.model.*;
@@ -8,6 +9,7 @@ import io.paytrailpayment.utilites.ResponseMessage;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -35,7 +37,7 @@ public class CreateRefundRequestUnitTest extends TestCase {
         Item item = new Item();
         item.setUnitPrice(1590);
         item.setUnits(1);
-        item.setVatPercentage(24);
+        item.setVatPercentage(new BigDecimal(24));
         item.setProductCode("#927502759");
         items.add(item);
 
